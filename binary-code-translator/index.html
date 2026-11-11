@@ -6,7 +6,7 @@
 <title>Binary Code Translator - Convert Binary to Text and Back</title>
 <meta name="description" content="Free binary code translator: turn binary code into readable text, and any English text back into binary. Handles spaces, line breaks, 0b prefixes, UTF-8.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b47c4'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='13' font-weight='bold' fill='%23ffffff' text-anchor='middle'%3E0b%3C/text%3E%3C/svg%3E">
-<link rel="canonical" href="https://bintextly.github.io/binary-code-translator/">
+<link rel="canonical" href="https://bintextly.com/binary-code-translator/">
 <style>
 :root{--ink:#181b20;--muted:#4b5462;--line:#d7dce4;--soft:#f4f6f9;--accent:#0b47c4;--accent-dark:#08379a;--ok:#0a6b3d;--warn:#8a5300;--err:#b42318}
 *,*::before,*::after{box-sizing:border-box}
@@ -83,7 +83,7 @@ footer p{margin:0}
 </head>
 <body>
 <a class="skip" href="#tool">Skip to the converter</a>
-<header class="site"><div class="wrap"><a class="brand" href="../">BinTextly</a></div></header>
+<header class="site"><div class="wrap"><a class="brand" href="/">BinTextly</a></div></header>
 
 <main class="wrap" id="main">
   <h1>Binary Code Translator</h1>
@@ -287,12 +287,7 @@ footer p{margin:0}
   <p class="sec-label" id="related-title">Related converters</p>
   <p>If you only need one direction, a dedicated page is usually faster than switching modes here.</p>
   <ul class="related">
-    <li><a href="../binary-to-english/">Read binary code as English text</a><span>Paste a string of bytes and get the plain-language output, with a step-by-step reading guide.</span></li>
-    <li><a href="../text-to-binary/">Encode English text into binary</a><span>The encode direction on its own, with byte counts and copy-ready 8-bit groups.</span></li>
-    <li><a href="../ascii-to-binary/">Convert ASCII characters to binary</a><span>One character in, one byte out, for checking a single value against the chart.</span></li>
-    <li><a href="../binary-to-ascii/">Decode binary to ASCII characters</a><span>A byte-by-byte view for data that is known to stay inside the 0–127 range.</span></li>
-    <li><a href="../binary-to-decimal/">Convert binary to decimal</a><span>Turn an 8-bit group into the number it represents, with the place values shown.</span></li>
-    <li><a href="../hex-to-binary/">Expand hex values into binary</a><span>Each hex digit becomes four bits, which is the quickest way to read a byte dump.</span></li>
+    <li><a href="/binary-to-english/">Read binary code as English text</a><span>Paste a string of bytes and get the plain-language output, with a step-by-step reading guide.</span></li>
   </ul>
   </section>
 
@@ -307,8 +302,8 @@ footer p{margin:0}
     <h3>Can I convert binary code without spaces?</h3>
     <p>Yes. The input is read as a continuous bit stream and cut into bytes every eight bits, so 0100100001101001 decodes to Hi. If the total is not a multiple of eight, the leftover bits at the end are ignored and the status line tells you how many were dropped.</p>
 
-    <h3>Which encoding should I choose?</h3>
-    <p>UTF-8 for almost everything, especially English text and anything produced by a modern application. Pick ASCII when you want strict 7-bit output and an error for anything above 127, UTF-16 for dumps from older Windows tools, and GBK for Chinese text created before UTF-8 became standard.</p>
+    <h3>Which encoding should I pick if I do not know the source?</h3>
+    <p>Start with UTF-8, which covers the large majority of text produced in the last fifteen years. If the result shows question marks or empty boxes, switch to ASCII for strict 7-bit data, GBK for Chinese text from older Windows software, or UTF-16 for dumps from legacy Windows tools. A wrong setting does not corrupt the data itself; it reads correct bytes through the wrong table, which is why the output degrades into question marks and unrelated symbols.</p>
 
     <h3>Why does the decoded text show question marks or boxes?</h3>
     <p>The bytes were almost certainly produced with a different encoding. Decoding GBK bytes as UTF-8 yields the replacement character, and decoding UTF-16 as UTF-8 yields a string of unrelated symbols. Change the dropdown and convert again — the binary itself has not changed.</p>
@@ -318,15 +313,12 @@ footer p{margin:0}
 
     <h3>Does this binary code translator upload my data?</h3>
     <p>No. The page is one static HTML file with inline JavaScript, and the conversion happens in your browser. There is no upload step, no account and no server-side processing, so pasting proprietary strings is no different from typing them into a text editor.</p>
-
-    <h3>Can it turn binary back into Chinese text?</h3>
-    <p>Yes, if the bytes were encoded with GBK or UTF-8. Choose the matching encoding, paste the binary, and the characters appear in the output box. Question marks in the result mean the selector is on the wrong setting.</p>
   </section>
 </main>
 
 <footer>
   <div class="wrap">
-    <p>BinTextly — free browser-based converters for binary, text, hex and ASCII. <a href="../">Back to all converters</a>.</p>
+    <p>BinTextly — free browser-based converters for binary, text, hex and ASCII. <a href="/">Back to all converters</a>.</p>
   </div>
 </footer>
 
@@ -361,10 +353,10 @@ footer p{margin:0}
     },
     {
       "@type": "Question",
-      "name": "Which encoding should I choose?",
+      "name": "Which encoding should I pick if I do not know the source?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "UTF-8 for almost everything, especially English text and anything produced by a modern application. Pick ASCII when you want strict 7-bit output and an error for anything above 127, UTF-16 for dumps from older Windows tools, and GBK for Chinese text created before UTF-8 became standard."
+        "text": "Start with UTF-8, which covers the large majority of text produced in the last fifteen years. If the result shows question marks or empty boxes, switch to ASCII for strict 7-bit data, GBK for Chinese text from older Windows software, or UTF-16 for dumps from legacy Windows tools. A wrong setting does not corrupt the data itself; it reads correct bytes through the wrong table, which is why the output degrades into question marks and unrelated symbols."
       }
     },
     {
@@ -389,14 +381,6 @@ footer p{margin:0}
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "No. The page is one static HTML file with inline JavaScript, and the conversion happens in your browser. There is no upload step, no account and no server-side processing, so pasting proprietary strings is no different from typing them into a text editor."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can it turn binary back into Chinese text?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes, if the bytes were encoded with GBK or UTF-8. Choose the matching encoding, paste the binary, and the characters appear in the output box. Question marks in the result mean the selector is on the wrong setting."
       }
     }
   ]

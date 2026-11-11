@@ -1,0 +1,6 @@
+# Kept in the repository, excluded from the published static assets.
+build.py
+site.config.js
+MIGRATION.md
+tools/
+.gitignore

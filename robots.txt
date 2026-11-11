@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://bintextly.com/sitemap.xml

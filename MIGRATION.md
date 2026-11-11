@@ -1,0 +1,45 @@
+# BinTextly — 站点维护
+
+纯静态站，页面本身就是部署产物。没有 dist 目录，没有打包器，没有运行时依赖。
+
+## 唯一变量
+
+`site.config.js` 里只有一个变量：
+
+```js
+const SITE_ORIGIN = "https://bintextly.com";
+```
+
+canonical、`robots.txt`、`sitemap.xml` 的绝对地址全部由它生成，页面内不硬编码域名。改域名 = 改这一行 + 跑一次构建。
+
+## 构建与校验
+
+```bash
+python3 build.py           # 写 canonical / robots.txt / sitemap.xml
+python3 build.py --check   # 只读校验，有问题退出码 1
+```
+
+构建是幂等的，重复跑不产生额外改动。提交前跑 `--check`。
+
+## build.py 校验什么
+
+- 每个页面恰好 1 条 canonical，值 = `SITE_ORIGIN` + 页面路径（带尾斜杠）
+- 所有绝对网址必须落在 `SITE_ORIGIN` 上；白名单只有 `www.w3.org`（SVG 命名空间）、`www.sitemaps.org`、`schema.org`。任何其他主机（包括旧域名）直接报错
+- 所有内部 `<a href>` 必须指向磁盘上真实存在的文件；绝对链接必须留在 `SITE_ORIGIN` 上
+- `sitemap.xml` 的 `<loc>` 集合 = 实际页面集合，无重复，`lastmod` 为 `YYYY-MM-DD`
+- `robots.txt` 与生成结果逐字节一致，且不封禁抓取
+- 页面必须有 title / meta description / 唯一 h1，且无 noindex、无 meta keywords
+- `404.html` 不得声明 canonical，但链接必须可解析
+
+## 加一个页面
+
+1. 新建 `<slug>/index.html`，写好正文与 TDK
+2. `python3 build.py` —— 页面由文件系统自动发现，canonical、sitemap 自动补齐
+3. 在相关页面的 Related converters 区块加内链（锚文本描述性 + 一句 15 词以内说明）
+4. `python3 build.py --check`
+
+页面列表不落在配置里，避免「加了页面忘了登记」这类漂移。
+
+## 不对外发布的文件
+
+`.assetsignore` 把构建脚本、配置、文档、`tools/` 排除在 Workers 静态资源之外，仓库里保留、线上不可访问。
