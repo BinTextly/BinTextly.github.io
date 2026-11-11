@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Binary to English Translator - Convert Binary Code to Text</title>
+<meta name="description" content="Convert binary code to English text instantly. Paste 01001000 01101001 and get readable text, with ASCII and UTF-8 support plus a step-by-step guide.">
+<link rel="canonical" href="https://bintextly.com/binary-to-english">
+<style>
+:root{--ink:#181b20;--muted:#4b5462;--line:#d7dce4;--soft:#f4f6f9;--accent:#0b47c4;--accent-dark:#08379a;--ok:#0a6b3d;--warn:#8a5300;--err:#b42318}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#fff;color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent);text-underline-offset:2px}
+a:hover{color:var(--accent-dark)}
+.wrap{max-width:800px;margin:0 auto;padding:0 16px}
+.skip{position:absolute;left:-9999px;top:0;background:#fff;padding:8px 12px;z-index:10;font-weight:600}
+.skip:focus{left:8px;top:8px;outline:3px solid var(--accent)}
+.site{border-bottom:1px solid var(--line);padding:10px 0}
+.brand{font-weight:700;text-decoration:none;color:var(--ink);font-size:15px}
+main{padding:20px 0 8px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 10px;letter-spacing:-.01em}
+.lede{margin:0 0 22px;color:var(--muted);font-size:1.0625rem}
+h2{font-size:1.3rem;line-height:1.3;margin:34px 0 10px;letter-spacing:-.01em}
+h3{font-size:1.0625rem;line-height:1.35;margin:24px 0 8px}
+p{margin:0 0 14px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:1px 4px}
+.tool{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fbfcfe;margin:16px 0 20px}
+.mode{display:flex;gap:8px;margin-bottom:14px}
+.opt{flex:1;position:relative}
+.opt input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.opt span{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 10px;border:1px solid #b9c1cd;border-radius:10px;background:#fff;font-size:.9375rem;font-weight:600;cursor:pointer;text-align:center;line-height:1.25}
+.opt input:checked+span{background:var(--accent);border-color:var(--accent);color:#fff}
+.opt input:focus-visible+span{outline:3px solid var(--accent);outline-offset:2px}
+.field{margin-bottom:14px}
+label{display:block;font-weight:600;font-size:.9375rem;margin-bottom:6px}
+textarea,select,input[type=search]{width:100%;font:inherit;font-size:16px;color:var(--ink);background:#fff;border:1px solid #b9c1cd;border-radius:10px;padding:10px 12px}
+textarea{min-height:104px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;line-height:1.5;resize:vertical}
+::placeholder{color:#636b78}
+textarea:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.hint{font-size:.8125rem;color:var(--muted);margin:6px 0 0}
+.row{display:grid;gap:12px;margin-bottom:14px}
+@media(min-width:560px){.row{grid-template-columns:220px 1fr;align-items:end}}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 4px}
+.btn{min-height:44px;padding:10px 14px;border-radius:10px;border:1px solid #b9c1cd;background:#fff;color:var(--ink);font:inherit;font-size:.9375rem;font-weight:600;cursor:pointer}
+.btn:hover{background:#eef2f8}
+.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
+.status{margin:14px 0 0;font-size:.875rem;line-height:1.55;color:var(--muted);border-left:3px solid var(--line);padding:2px 0 2px 10px}
+.status-ok{border-color:var(--ok)}
+.status-warn{border-color:#b07800;color:var(--warn)}
+.status-error{border-color:var(--err);color:var(--err)}
+.example{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--soft);font-size:.9375rem}
+.example code{background:#fff}
+.chart-controls{display:grid;gap:10px;margin:14px 0}
+@media(min-width:560px){.chart-controls{grid-template-columns:1fr auto;align-items:end}}
+.table-wrap{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:12px;margin:4px 0 12px}
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+caption{text-align:left;padding:10px 12px;font-size:.8125rem;color:var(--muted);border-bottom:1px solid var(--line);background:var(--soft);caption-side:top}
+th,td{padding:7px 10px;border-bottom:1px solid #e8ecf2;text-align:left;white-space:nowrap}
+thead th{position:sticky;top:0;background:#fff;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--line)}
+tbody tr{height:38px}
+tbody tr:nth-child(even){background:#fafbfd}
+td.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+td.ch{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:700}
+.links{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px}
+.links li{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff}
+.links a{font-weight:600}
+.links p{margin:2px 0 0;font-size:.875rem;color:var(--muted)}
+.sec-label{font-size:1.3rem;font-weight:700;line-height:1.3;margin:34px 0 10px;letter-spacing:-.01em}
+.faq h3{margin:22px 0 6px;font-size:1rem}
+.faq h3+p{margin:0;font-size:.9375rem}
+footer{border-top:1px solid var(--line);margin-top:36px;padding:20px 0 32px;font-size:.875rem;color:var(--muted)}
+footer p{margin:0 0 6px}
+footer a{font-weight:600}
+</style>
+</head>
+<body>
+<a class="skip" href="#tool">Skip to the converter</a>
+<header class="site"><div class="wrap"><a class="brand" href="/">BinTextly</a></div></header>
+
+<main class="wrap" id="main">
+
+<h1>Binary to English Translator</h1>
+<p class="lede">Paste binary code and read it back as plain English text — the decoding runs in your browser, so nothing you type leaves your device.</p>
+
+<section aria-labelledby="what-title">
+  <h2 id="what-title">What Does This Binary Say?</h2>
+  <p>This binary to English translator reads a string of 0s and 1s and returns the text it stands for. Paste the bits, choose the character encoding, and the result appears as you type.</p>
+
+  <div class="tool" id="tool">
+    <div class="mode" role="radiogroup" aria-label="Conversion direction">
+      <label class="opt"><input type="radio" name="mode" value="decode" checked><span>Binary → English</span></label>
+      <label class="opt"><input type="radio" name="mode" value="encode"><span>English → Binary</span></label>
+    </div>
+
+    <div class="field">
+      <label for="source" id="source-label">Binary input</label>
+      <textarea id="source" rows="5" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="source-hint" placeholder="01001000 01101001"></textarea>
+      <p class="hint" id="source-hint">Spaces, commas, tabs, line breaks and 0b prefixes are ignored. Up to 100,000 characters.</p>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="encoding">Character encoding</label>
+        <select id="encoding" aria-describedby="enc-hint">
+          <option value="utf8" selected>UTF-8</option>
+          <option value="ascii">ASCII</option>
+          <option value="utf16">UTF-16</option>
+          <option value="gbk">GBK</option>
+        </select>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="convert">Convert</button>
+        <button type="button" class="btn" id="swap">Swap</button>
+      </div>
+    </div>
+    <p class="hint" id="enc-hint">UTF-16 is read as big-endian unless the data starts with a BOM (FEFF or FFFE).</p>
+
+    <div class="field" style="margin-top:14px">
+      <label for="result" id="result-label">English output</label>
+      <textarea id="result" rows="5" readonly spellcheck="false" placeholder="Hi"></textarea>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn" id="copy">Copy result</button>
+      <button type="button" class="btn" id="clear">Clear</button>
+      <button type="button" class="btn" id="example">Load example</button>
+    </div>
+
+    <p class="status" id="status" role="status" aria-live="polite">Ready. Paste binary above, or load the example.</p>
+  </div>
+
+  <p>Binary rarely arrives clean. Copied out of a shell it comes with a <code>0b</code> prefix on every byte; copied out of a debugger or a hex dump it comes with a space every eight bits; exported from a spreadsheet it comes back comma-separated. All of those forms are stripped before decoding, and a single unbroken run of digits is grouped from the left, eight at a time. If a character other than 0 or 1 shows up, the converter names its position instead of failing silently, because a wrong paste is almost always a stray letter or a quote character at a known spot.</p>
+</section>
+
+<section aria-labelledby="how-title">
+  <h2 id="how-title">How to Convert Binary to English</h2>
+  <p>Every binary to English conversion is the same two-step job: cut the bit stream into fixed-size chunks, then look up each chunk in a character table. The tool does both steps for you, but walking through them once explains why the output sometimes looks wrong.</p>
+
+  <h3>How to use this binary to English converter</h3>
+  <ol>
+    <li>Paste the bits into the input box. Spaces, commas, tabs, line breaks and <code>0b</code> prefixes are stripped first, so a hex-dump paste and one continuous string both work.</li>
+    <li>Pick the character encoding. UTF-8 is the right default for anything written in the last fifteen years; ASCII is the strict 7-bit option; UTF-16 and GBK are for data exported from Windows tools, Office documents and older Chinese software.</li>
+    <li>Read the output. Conversion runs 150 ms after you stop typing, and the Convert button forces it immediately. Problems — a stray character, an incomplete byte, invalid UTF-8 — are reported with the position that caused them.</li>
+    <li>Copy the result, or press Swap to move the output into the input box and reverse the direction. Clear empties both boxes; Load example drops in a short string you can test against.</li>
+  </ol>
+
+  <h3>How binary code works</h3>
+  <p>A bit is one 0 or 1. Eight bits make a byte, and in ASCII a byte holds exactly one character. Each position in the byte has a fixed weight — 128, 64, 32, 16, 8, 4, 2, 1, reading left to right. Add the weights wherever a 1 appears and you have the code point of that character. This is the whole trick; everything else is bookkeeping.</p>
+  <p class="example"><code>01001000 01100101 01101100 01101100 01101111</code> = <strong>Hello</strong></p>
+  <p>The first byte has 1s in the 64 and 8 positions, so 64 + 8 = 72, which is a capital H. The remaining bytes evaluate to 101, 108, 108 and 111, spelling <em>ello</em>. Change one bit and the letter changes with it: <code>01001001</code> is 73, a capital I, and <code>01101000</code> is 104, a lowercase h.</p>
+  <p>Grouping has to start from the left and stay constant for the same reason. Delete one bit from the middle of a stream and every byte after it shifts by one position, so the rest of the message turns into noise. When the total is not a multiple of eight, the converter decodes the complete bytes and tells you how many bits were left over, rather than padding them into a character that was never sent.</p>
+  <p>ASCII ends at 127. Bytes above that point mean different things in different encodings: in UTF-8 they open a multi-byte sequence, in GBK they pair with the next byte, in UTF-16 they form half of a 16-bit unit. That is why a stream can be perfectly valid and still decode to gibberish — the bits are right, the assumption about encoding is wrong. Try the dropdown before you assume the paste was corrupted.</p>
+  <p>UTF-8 matches ASCII for the first 128 code points, so plain English text produces identical bytes in both. The difference only appears with accented letters, typographic quotes, currency symbols and non-Latin scripts, each of which costs two to four bytes. It is also why the length of a binary string does not equal the number of characters it represents.</p>
+  <p>Read a few of these by hand and the pattern stops being opaque; until then, the binary to English translator above is faster than counting 64s and 8s on paper.</p>
+</section>
+
+<section aria-labelledby="chart-title">
+  <h2 id="chart-title">Binary to English Chart</h2>
+  <p>This binary to English chart lists every printable ASCII character with its decimal value, its 8-bit binary form and its hex equivalent. Type in the filter box to narrow it down — a letter, a number like 72, a bit pattern like 01001000, or a name like comma all work.</p>
+
+  <div class="chart-controls">
+    <div>
+      <label for="chart-filter">Filter the chart</label>
+      <input type="search" id="chart-filter" placeholder="A, 72, 01001000, comma" autocomplete="off">
+    </div>
+    <div class="actions">
+      <button type="button" class="btn" id="copy-table">Copy table</button>
+    </div>
+  </div>
+  <p class="hint" id="chart-count" role="status" aria-live="polite">95 characters shown.</p>
+
+  <div class="table-wrap">
+    <table id="ascii-chart">
+      <caption>Printable ASCII characters and their values. In UTF-8 all of them encode as the same single byte.</caption>
+      <thead>
+        <tr><th scope="col">Char</th><th scope="col">Name</th><th scope="col">Decimal</th><th scope="col">Binary</th><th scope="col">Hex</th></tr>
+      </thead>
+      <tbody>
+      <tr><td class="ch">space</td><td>space</td><td class="mono">32</td><td class="mono">00100000</td><td class="mono">20</td></tr>
+      <tr><td class="ch">!</td><td>exclamation mark</td><td class="mono">33</td><td class="mono">00100001</td><td class="mono">21</td></tr>
+      <tr><td class="ch">"</td><td>double quote</td><td class="mono">34</td><td class="mono">00100010</td><td class="mono">22</td></tr>
+      <tr><td class="ch">#</td><td>number sign</td><td class="mono">35</td><td class="mono">00100011</td><td class="mono">23</td></tr>
+      <tr><td class="ch">$</td><td>dollar sign</td><td class="mono">36</td><td class="mono">00100100</td><td class="mono">24</td></tr>
+      <tr><td class="ch">%</td><td>percent sign</td><td class="mono">37</td><td class="mono">00100101</td><td class="mono">25</td></tr>
+      <tr><td class="ch">&amp;</td><td>ampersand</td><td class="mono">38</td><td class="mono">00100110</td><td class="mono">26</td></tr>
+      <tr><td class="ch">'</td><td>apostrophe</td><td class="mono">39</td><td class="mono">00100111</td><td class="mono">27</td></tr>
+      <tr><td class="ch">(</td><td>left parenthesis</td><td class="mono">40</td><td class="mono">00101000</td><td class="mono">28</td></tr>
+      <tr><td class="ch">)</td><td>right parenthesis</td><td class="mono">41</td><td class="mono">00101001</td><td class="mono">29</td></tr>
+      <tr><td class="ch">*</td><td>asterisk</td><td class="mono">42</td><td class="mono">00101010</td><td class="mono">2A</td></tr>
+      <tr><td class="ch">+</td><td>plus sign</td><td class="mono">43</td><td class="mono">00101011</td><td class="mono">2B</td></tr>
+      <tr><td class="ch">,</td><td>comma</td><td class="mono">44</td><td class="mono">00101100</td><td class="mono">2C</td></tr>
+      <tr><td class="ch">-</td><td>hyphen</td><td class="mono">45</td><td class="mono">00101101</td><td class="mono">2D</td></tr>
+      <tr><td class="ch">.</td><td>period</td><td class="mono">46</td><td class="mono">00101110</td><td class="mono">2E</td></tr>
+      <tr><td class="ch">/</td><td>slash</td><td class="mono">47</td><td class="mono">00101111</td><td class="mono">2F</td></tr>
+      <tr><td class="ch">0</td><td>digit 0</td><td class="mono">48</td><td class="mono">00110000</td><td class="mono">30</td></tr>
+      <tr><td class="ch">1</td><td>digit 1</td><td class="mono">49</td><td class="mono">00110001</td><td class="mono">31</td></tr>
+      <tr><td class="ch">2</td><td>digit 2</td><td class="mono">50</td><td class="mono">00110010</td><td class="mono">32</td></tr>
+      <tr><td class="ch">3</td><td>digit 3</td><td class="mono">51</td><td class="mono">00110011</td><td class="mono">33</td></tr>
+      <tr><td class="ch">4</td><td>digit 4</td><td class="mono">52</td><td class="mono">00110100</td><td class="mono">34</td></tr>
+      <tr><td class="ch">5</td><td>digit 5</td><td class="mono">53</td><td class="mono">00110101</td><td class="mono">35</td></tr>
+      <tr><td class="ch">6</td><td>digit 6</td><td class="mono">54</td><td class="mono">00110110</td><td class="mono">36</td></tr>
+      <tr><td class="ch">7</td><td>digit 7</td><td class="mono">55</td><td class="mono">00110111</td><td class="mono">37</td></tr>
+      <tr><td class="ch">8</td><td>digit 8</td><td class="mono">56</td><td class="mono">00111000</td><td class="mono">38</td></tr>
+      <tr><td class="ch">9</td><td>digit 9</td><td class="mono">57</td><td class="mono">00111001</td><td class="mono">39</td></tr>
+      <tr><td class="ch">:</td><td>colon</td><td class="mono">58</td><td class="mono">00111010</td><td class="mono">3A</td></tr>
+      <tr><td class="ch">;</td><td>semicolon</td><td class="mono">59</td><td class="mono">00111011</td><td class="mono">3B</td></tr>
+      <tr><td class="ch">&lt;</td><td>less than</td><td class="mono">60</td><td class="mono">00111100</td><td class="mono">3C</td></tr>
+      <tr><td class="ch">=</td><td>equals sign</td><td class="mono">61</td><td class="mono">00111101</td><td class="mono">3D</td></tr>
+      <tr><td class="ch">&gt;</td><td>greater than</td><td class="mono">62</td><td class="mono">00111110</td><td class="mono">3E</td></tr>
+      <tr><td class="ch">?</td><td>question mark</td><td class="mono">63</td><td class="mono">00111111</td><td class="mono">3F</td></tr>
+      <tr><td class="ch">@</td><td>at sign</td><td class="mono">64</td><td class="mono">01000000</td><td class="mono">40</td></tr>
+      <tr><td class="ch">A</td><td>uppercase A</td><td class="mono">65</td><td class="mono">01000001</td><td class="mono">41</td></tr>
+      <tr><td class="ch">B</td><td>uppercase B</td><td class="mono">66</td><td class="mono">01000010</td><td class="mono">42</td></tr>
+      <tr><td class="ch">C</td><td>uppercase C</td><td class="mono">67</td><td class="mono">01000011</td><td class="mono">43</td></tr>
+      <tr><td class="ch">D</td><td>uppercase D</td><td class="mono">68</td><td class="mono">01000100</td><td class="mono">44</td></tr>
+      <tr><td class="ch">E</td><td>uppercase E</td><td class="mono">69</td><td class="mono">01000101</td><td class="mono">45</td></tr>
+      <tr><td class="ch">F</td><td>uppercase F</td><td class="mono">70</td><td class="mono">01000110</td><td class="mono">46</td></tr>
+      <tr><td class="ch">G</td><td>uppercase G</td><td class="mono">71</td><td class="mono">01000111</td><td class="mono">47</td></tr>
+      <tr><td class="ch">H</td><td>uppercase H</td><td class="mono">72</td><td class="mono">01001000</td><td class="mono">48</td></tr>
+      <tr><td class="ch">I</td><td>uppercase I</td><td class="mono">73</td><td class="mono">01001001</td><td class="mono">49</td></tr>
+      <tr><td class="ch">J</td><td>uppercase J</td><td class="mono">74</td><td class="mono">01001010</td><td class="mono">4A</td></tr>
+      <tr><td class="ch">K</td><td>uppercase K</td><td class="mono">75</td><td class="mono">01001011</td><td class="mono">4B</td></tr>
+      <tr><td class="ch">L</td><td>uppercase L</td><td class="mono">76</td><td class="mono">01001100</td><td class="mono">4C</td></tr>
+      <tr><td class="ch">M</td><td>uppercase M</td><td class="mono">77</td><td class="mono">01001101</td><td class="mono">4D</td></tr>
+      <tr><td class="ch">N</td><td>uppercase N</td><td class="mono">78</td><td class="mono">01001110</td><td class="mono">4E</td></tr>
+      <tr><td class="ch">O</td><td>uppercase O</td><td class="mono">79</td><td class="mono">01001111</td><td class="mono">4F</td></tr>
+      <tr><td class="ch">P</td><td>uppercase P</td><td class="mono">80</td><td class="mono">01010000</td><td class="mono">50</td></tr>
+      <tr><td class="ch">Q</td><td>uppercase Q</td><td class="mono">81</td><td class="mono">01010001</td><td class="mono">51</td></tr>
+      <tr><td class="ch">R</td><td>uppercase R</td><td class="mono">82</td><td class="mono">01010010</td><td class="mono">52</td></tr>
+      <tr><td class="ch">S</td><td>uppercase S</td><td class="mono">83</td><td class="mono">01010011</td><td class="mono">53</td></tr>
+      <tr><td class="ch">T</td><td>uppercase T</td><td class="mono">84</td><td class="mono">01010100</td><td class="mono">54</td></tr>
+      <tr><td class="ch">U</td><td>uppercase U</td><td class="mono">85</td><td class="mono">01010101</td><td class="mono">55</td></tr>
+      <tr><td class="ch">V</td><td>uppercase V</td><td class="mono">86</td><td class="mono">01010110</td><td class="mono">56</td></tr>
+      <tr><td class="ch">W</td><td>uppercase W</td><td class="mono">87</td><td class="mono">01010111</td><td class="mono">57</td></tr>
+      <tr><td class="ch">X</td><td>uppercase X</td><td class="mono">88</td><td class="mono">01011000</td><td class="mono">58</td></tr>
+      <tr><td class="ch">Y</td><td>uppercase Y</td><td class="mono">89</td><td class="mono">01011001</td><td class="mono">59</td></tr>
+      <tr><td class="ch">Z</td><td>uppercase Z</td><td class="mono">90</td><td class="mono">01011010</td><td class="mono">5A</td></tr>
+      <tr><td class="ch">[</td><td>left bracket</td><td class="mono">91</td><td class="mono">01011011</td><td class="mono">5B</td></tr>
+      <tr><td class="ch">\</td><td>backslash</td><td class="mono">92</td><td class="mono">01011100</td><td class="mono">5C</td></tr>
+      <tr><td class="ch">]</td><td>right bracket</td><td class="mono">93</td><td class="mono">01011101</td><td class="mono">5D</td></tr>
+      <tr><td class="ch">^</td><td>caret</td><td class="mono">94</td><td class="mono">01011110</td><td class="mono">5E</td></tr>
+      <tr><td class="ch">_</td><td>underscore</td><td class="mono">95</td><td class="mono">01011111</td><td class="mono">5F</td></tr>
+      <tr><td class="ch">`</td><td>backtick</td><td class="mono">96</td><td class="mono">01100000</td><td class="mono">60</td></tr>
+      <tr><td class="ch">a</td><td>lowercase a</td><td class="mono">97</td><td class="mono">01100001</td><td class="mono">61</td></tr>
+      <tr><td class="ch">b</td><td>lowercase b</td><td class="mono">98</td><td class="mono">01100010</td><td class="mono">62</td></tr>
+      <tr><td class="ch">c</td><td>lowercase c</td><td class="mono">99</td><td class="mono">01100011</td><td class="mono">63</td></tr>
+      <tr><td class="ch">d</td><td>lowercase d</td><td class="mono">100</td><td class="mono">01100100</td><td class="mono">64</td></tr>
+      <tr><td class="ch">e</td><td>lowercase e</td><td class="mono">101</td><td class="mono">01100101</td><td class="mono">65</td></tr>
+      <tr><td class="ch">f</td><td>lowercase f</td><td class="mono">102</td><td class="mono">01100110</td><td class="mono">66</td></tr>
+      <tr><td class="ch">g</td><td>lowercase g</td><td class="mono">103</td><td class="mono">01100111</td><td class="mono">67</td></tr>
+      <tr><td class="ch">h</td><td>lowercase h</td><td class="mono">104</td><td class="mono">01101000</td><td class="mono">68</td></tr>
+      <tr><td class="ch">i</td><td>lowercase i</td><td class="mono">105</td><td class="mono">01101001</td><td class="mono">69</td></tr>
+      <tr><td class="ch">j</td><td>lowercase j</td><td class="mono">106</td><td class="mono">01101010</td><td class="mono">6A</td></tr>
+      <tr><td class="ch">k</td><td>lowercase k</td><td class="mono">107</td><td class="mono">01101011</td><td class="mono">6B</td></tr>
+      <tr><td class="ch">l</td><td>lowercase l</td><td class="mono">108</td><td class="mono">01101100</td><td class="mono">6C</td></tr>
+      <tr><td class="ch">m</td><td>lowercase m</td><td class="mono">109</td><td class="mono">01101101</td><td class="mono">6D</td></tr>
+      <tr><td class="ch">n</td><td>lowercase n</td><td class="mono">110</td><td class="mono">01101110</td><td class="mono">6E</td></tr>
+      <tr><td class="ch">o</td><td>lowercase o</td><td class="mono">111</td><td class="mono">01101111</td><td class="mono">6F</td></tr>
+      <tr><td class="ch">p</td><td>lowercase p</td><td class="mono">112</td><td class="mono">01110000</td><td class="mono">70</td></tr>
+      <tr><td class="ch">q</td><td>lowercase q</td><td class="mono">113</td><td class="mono">01110001</td><td class="mono">71</td></tr>
+      <tr><td class="ch">r</td><td>lowercase r</td><td class="mono">114</td><td class="mono">01110010</td><td class="mono">72</td></tr>
+      <tr><td class="ch">s</td><td>lowercase s</td><td class="mono">115</td><td class="mono">01110011</td><td class="mono">73</td></tr>
+      <tr><td class="ch">t</td><td>lowercase t</td><td class="mono">116</td><td class="mono">01110100</td><td class="mono">74</td></tr>
+      <tr><td class="ch">u</td><td>lowercase u</td><td class="mono">117</td><td class="mono">01110101</td><td class="mono">75</td></tr>
+      <tr><td class="ch">v</td><td>lowercase v</td><td class="mono">118</td><td class="mono">01110110</td><td class="mono">76</td></tr>
+      <tr><td class="ch">w</td><td>lowercase w</td><td class="mono">119</td><td class="mono">01110111</td><td class="mono">77</td></tr>
+      <tr><td class="ch">x</td><td>lowercase x</td><td class="mono">120</td><td class="mono">01111000</td><td class="mono">78</td></tr>
+      <tr><td class="ch">y</td><td>lowercase y</td><td class="mono">121</td><td class="mono">01111001</td><td class="mono">79</td></tr>
+      <tr><td class="ch">z</td><td>lowercase z</td><td class="mono">122</td><td class="mono">01111010</td><td class="mono">7A</td></tr>
+      <tr><td class="ch">{</td><td>left brace</td><td class="mono">123</td><td class="mono">01111011</td><td class="mono">7B</td></tr>
+      <tr><td class="ch">|</td><td>vertical bar</td><td class="mono">124</td><td class="mono">01111100</td><td class="mono">7C</td></tr>
+      <tr><td class="ch">}</td><td>right brace</td><td class="mono">125</td><td class="mono">01111101</td><td class="mono">7D</td></tr>
+      <tr><td class="ch">~</td><td>tilde</td><td class="mono">126</td><td class="mono">01111110</td><td class="mono">7E</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Two things the chart does not cover. Control characters — tab, line feed, carriage return — have no visible form, and they reach decoded text as a line break or as nothing at all. And anything past ASCII is multi-byte: a lowercase e with an acute accent is <code>11000011 10101001</code> in UTF-8, two bytes for one character, even though it is the single value 233 in Latin-1.</p>
+</section>
+
+<section aria-labelledby="related-title">
+  <p class="sec-label" id="related-title">Related converters</p>
+  <ul class="links">
+    <li><a href="/binary-code-translator">Binary code translator</a><p>Decode or encode binary against ASCII, UTF-8 and UTF-16, with the same error reporting as this page.</p></li>
+    <li><a href="/text-to-binary">Text to binary converter</a><p>The encode direction on its own, for when you only need bits out of a sentence.</p></li>
+    <li><a href="/binary-to-ascii">Binary to ASCII converter</a><p>Strict 7-bit decoding, plus what to do when a byte lands above 127.</p></li>
+    <li><a href="/binary-to-decimal">Binary to decimal converter</a><p>Read a byte as a number instead of a character, with the weight table spelled out.</p></li>
+    <li><a href="/hex-to-binary">Hex to binary converter</a><p>Turn a hex dump into a bit string before running it through this decoder.</p></li>
+    <li><a href="/ascii-to-binary">ASCII to binary converter</a><p>Convert plain ASCII text into eight-bit groups, one per character.</p></li>
+  </ul>
+</section>
+
+<section class="faq" aria-labelledby="faq-title">
+  <p class="sec-label" id="faq-title">Frequently asked questions</p>
+  <h3>How do I read binary code as English text?</h3>
+  <p>Group the bits into eight-bit bytes, convert each byte to its decimal value, then look that value up in the ASCII table. 01001000 is 72, which is a capital H. This binary to English translator does the grouping and the lookup for you, so you can paste a paragraph instead of reading it byte by byte.</p>
+  <h3>What does 01001000 01101001 mean?</h3>
+  <p>Those two bytes spell Hi. 01001000 is decimal 72 and 01101001 is decimal 105. Paste the same string into the converter above and you should get those two letters back.</p>
+  <h3>Can I paste binary without spaces?</h3>
+  <p>Yes. Spaces, tabs, commas and line breaks are ignored, and any 0b prefix is removed, so 0100100001101001 and 0b01001000 0b01101001 decode to the same text. A continuous run of digits is grouped from the left, eight bits at a time.</p>
+  <h3>Why does the output look like random symbols?</h3>
+  <p>The bits are probably not in the encoding you selected. Plain English is usually ASCII or UTF-8, but text exported from Windows tools may be UTF-16, and older Chinese documents are often GBK. Change the dropdown and convert again; if replacement characters remain, those bytes do not form valid text in any of those encodings.</p>
+  <h3>Is my binary sent to a server?</h3>
+  <p>No. The conversion runs in JavaScript on your device, and the page makes no network request after it loads. You can switch off your connection and keep using the binary to English translator.</p>
+  <h3>How much binary can I convert at once?</h3>
+  <p>The input box takes up to 100,000 characters, which is about 12,500 bytes of decoded text. Longer input stops with a message instead of freezing the tab.</p>
+  <h3>What is the difference between ASCII and UTF-8 here?</h3>
+  <p>For the printable English characters in the chart they produce identical bytes, one per character. UTF-8 only diverges when the text contains accented letters, symbols or non-Latin scripts, which take two to four bytes each.</p>
+  <h3>Can I convert English text back into binary?</h3>
+  <p>Yes. Use Swap or the direction toggle to switch to English to binary, type a sentence, and the converter returns eight-bit groups separated by spaces. UTF-8 is the safe choice for anything that is not plain English.</p>
+</section>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I read binary code as English text?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Group the bits into eight-bit bytes, convert each byte to its decimal value, then look that value up in the ASCII table. 01001000 is 72, which is a capital H. This binary to English translator does the grouping and the lookup for you, so you can paste a paragraph instead of reading it byte by byte."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does 01001000 01101001 mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Those two bytes spell Hi. 01001000 is decimal 72 and 01101001 is decimal 105. Paste the same string into the converter above and you should get those two letters back."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I paste binary without spaces?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Spaces, tabs, commas and line breaks are ignored, and any 0b prefix is removed, so 0100100001101001 and 0b01001000 0b01101001 decode to the same text. A continuous run of digits is grouped from the left, eight bits at a time."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does the output look like random symbols?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The bits are probably not in the encoding you selected. Plain English is usually ASCII or UTF-8, but text exported from Windows tools may be UTF-16, and older Chinese documents are often GBK. Change the dropdown and convert again; if replacement characters remain, those bytes do not form valid text in any of those encodings."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my binary sent to a server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The conversion runs in JavaScript on your device, and the page makes no network request after it loads. You can switch off your connection and keep using the binary to English translator."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much binary can I convert at once?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The input box takes up to 100,000 characters, which is about 12,500 bytes of decoded text. Longer input stops with a message instead of freezing the tab."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between ASCII and UTF-8 here?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For the printable English characters in the chart they produce identical bytes, one per character. UTF-8 only diverges when the text contains accented letters, symbols or non-Latin scripts, which take two to four bytes each."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I convert English text back into binary?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Use Swap or the direction toggle to switch to English to binary, type a sentence, and the converter returns eight-bit groups separated by spaces. UTF-8 is the safe choice for anything that is not plain English."
+      }
+    }
+  ]
+}
+</script>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><a href="/">BinTextly home</a></p>
+    <p>Free browser-based converters for binary, text, hex and ASCII. No sign-up, no uploads — every conversion runs on your own device.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var MAX_INPUT = 100000;
+  var MAX_UNITS = 125000;
+
+  var src = document.getElementById('source');
+  var out = document.getElementById('result');
+  var encSel = document.getElementById('encoding');
+  var statusEl = document.getElementById('status');
+  var srcLabel = document.getElementById('source-label');
+  var outLabel = document.getElementById('result-label');
+  var radios = document.querySelectorAll('input[name="mode"]');
+  var timer = null;
+  var mode = 'decode';
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function fmt(n) { return Number(n).toLocaleString('en-US'); }
+  function plural(n, one, many) { return fmt(n) + ' ' + (Number(n) === 1 ? one : many); }
+  function setStatus(html, tone) {
+    statusEl.className = 'status' + (tone ? ' status-' + tone : '');
+    statusEl.innerHTML = html;
+  }
+  function encName() {
+    return { utf8: 'UTF-8', ascii: 'ASCII', utf16: 'UTF-16', gbk: 'GBK' }[encSel.value];
+  }
+
+  /* ---------- binary scanning ---------- */
+  function scanBinary(raw) {
+    var bits = '';
+    for (var i = 0; i < raw.length; i++) {
+      var c = raw.charAt(i);
+      if (c === '0' || c === '1') {
+        if (c === '0' && (raw.charAt(i + 1) === 'b' || raw.charAt(i + 1) === 'B')) {
+          var after = raw.charAt(i + 2);
+          if (after === '0' || after === '1') { i += 1; continue; }
+          return { error: { index: i + 1 } };
+        }
+        bits += c;
+        continue;
+      }
+      if (c === ' ' || c === '\n' || c === '\r' || c === '\t' || c === ',' || c === '\u00a0') continue;
+      return { error: { index: i } };
+    }
+    return { bits: bits };
+  }
+
+  function badCharMessage(raw, idx) {
+    var ch = raw.charAt(idx);
+    var start = Math.max(0, idx - 12);
+    var end = Math.min(raw.length, idx + 13);
+    var snippet = (start > 0 ? '\u2026' : '') + raw.slice(start, idx) + '[' + ch + ']' + raw.slice(idx + 1, end) + (end < raw.length ? '\u2026' : '');
+    return '<strong>Character ' + (idx + 1) + ' is &ldquo;' + esc(ch) + '&rdquo;.</strong> Binary input can only contain 0 and 1; spaces, commas, tabs and line breaks are skipped, and 0b prefixes are removed automatically. Near that position: <code>' + esc(snippet) + '</code>';
+  }
+
+  /* ---------- decoding ---------- */
+  function bitsToBytes(bits) {
+    var n = Math.floor(bits.length / 8);
+    var bytes = new Uint8Array(n);
+    for (var i = 0; i < n; i++) bytes[i] = parseInt(bits.substr(i * 8, 8), 2);
+    return bytes;
+  }
+
+  function decodeBits(bits, encoding) {
+    var text = '';
+    var note = '';
+    var i;
+    if (encoding === 'utf16') {
+      var units = Math.floor(bits.length / 16);
+      if (!units) return { text: '', note: 'A UTF-16 character needs 16 bits, and only ' + bits.length + ' were supplied.' };
+      var bytes16 = new Uint8Array(units * 2);
+      for (i = 0; i < units; i++) {
+        var v = parseInt(bits.substr(i * 16, 16), 2);
+        bytes16[i * 2] = v >> 8;
+        bytes16[i * 2 + 1] = v & 255;
+      }
+      var tag = 'utf-16be';
+      if (bytes16.length >= 2 && bytes16[0] === 0xFE && bytes16[1] === 0xFF) {
+        bytes16 = bytes16.subarray(2);
+      } else if (bytes16.length >= 2 && bytes16[0] === 0xFF && bytes16[1] === 0xFE) {
+        tag = 'utf-16le';
+        bytes16 = bytes16.subarray(2);
+      }
+      try { text = new TextDecoder(tag).decode(bytes16); } catch (e) { return { text: '', note: 'This browser cannot decode UTF-16.' }; }
+      return { text: text, note: '' };
+    }
+
+    var b = bitsToBytes(bits);
+
+    if (encoding === 'ascii') {
+      var over = 0;
+      var parts = [];
+      for (i = 0; i < b.length; i++) {
+        if (b[i] > 127) over++;
+        parts.push(String.fromCharCode(b[i]));
+      }
+      if (over) {
+        note = over + ' byte' + (over === 1 ? ' is' : 's are') + ' above 127, outside 7-bit ASCII, so ' + (over === 1 ? 'it is' : 'they are') + ' shown as Latin-1. Switch to UTF-8 or GBK if that is where the text came from.';
+      }
+      return { text: parts.join(''), note: note };
+    }
+
+    if (encoding === 'gbk') {
+      try { text = new TextDecoder('gbk').decode(b); } catch (err) { return { text: '', note: 'This browser cannot decode GBK. Chrome, Edge, Firefox and Safari can.' }; }
+      if (text.indexOf('\uFFFD') !== -1) note = 'Some bytes are not valid GBK and appear as replacement characters.';
+      return { text: text, note: note };
+    }
+
+    try {
+      text = new TextDecoder('utf-8', { fatal: true }).decode(b);
+    } catch (e2) {
+      text = new TextDecoder('utf-8').decode(b);
+      note = 'Part of this stream is not valid UTF-8, so those bytes show as replacement characters. If the source was GBK or Latin-1, change the encoding.';
+    }
+    return { text: text, note: note };
+  }
+
+  function runDecode(raw) {
+    var scan = scanBinary(raw);
+    if (scan.error) {
+      out.value = '';
+      setStatus(badCharMessage(raw, scan.error.index), 'error');
+      return;
+    }
+    var bits = scan.bits;
+    if (!bits) {
+      out.value = '';
+      setStatus('No 0s or 1s found in the input. Paste a binary string such as <code>01001000 01101001</code>.', 'error');
+      return;
+    }
+    var unit = encSel.value === 'utf16' ? 16 : 8;
+    var extra = bits.length % unit;
+    var res = decodeBits(bits, encSel.value);
+    out.value = res.text;
+    var msg = 'Decoded ' + plural(Math.floor(bits.length / unit), unit === 16 ? '16-bit unit' : 'byte', unit === 16 ? '16-bit units' : 'bytes') + ' into ' + plural(res.text.length, 'character', 'characters') + ' as ' + encName() + '.';
+    if (extra) {
+      msg += ' The last ' + extra + ' bit' + (extra === 1 ? '' : 's') + ' do' + (extra === 1 ? 'es' : '') + ' not fill a full character and were ignored.';
+    }
+    if (res.note) msg += ' ' + res.note;
+    setStatus(msg, (extra || res.note) ? 'warn' : 'ok');
+  }
+
+  /* ---------- encoding ---------- */
+  function pad(bits, len) {
+    var s = String(bits);
+    while (s.length < len) s = '0' + s;
+    return s;
+  }
+
+  function encodeText(text, encoding) {
+    var units = [];
+    var i;
+    if (encoding === 'utf8') {
+      var bytes = new TextEncoder().encode(text);
+      for (i = 0; i < bytes.length; i++) units.push(pad(bytes[i].toString(2), 8));
+      return { units: units, note: '' };
+    }
+    if (encoding === 'utf16') {
+      for (i = 0; i < text.length; i++) units.push(pad(text.charCodeAt(i).toString(2), 16));
+      return { units: units, note: 'UTF-16 output is written big-endian with no byte order mark.' };
+    }
+    for (i = 0; i < text.length; i++) {
+      var code = text.charCodeAt(i);
+      if (code > 127) return { error: { index: i, char: text.charAt(i) }, encoding: encoding };
+      units.push(pad(code.toString(2), 8));
+    }
+    return {
+      units: units,
+      note: encoding === 'gbk' ? 'GBK and ASCII agree below 128, so plain English encodes to the same bytes here; other characters need a mapping table this page does not carry.' : ''
+    };
+  }
+
+  function runEncode(raw) {
+    var res = encodeText(raw, encSel.value);
+    if (res.error) {
+      out.value = '';
+      var ch = '&ldquo;' + esc(res.error.char) + '&rdquo;';
+      var msg = res.encoding === 'gbk'
+        ? '<strong>Character ' + (res.error.index + 1) + ' (' + ch + ') has no GBK mapping here.</strong> The browser has no GBK encoder, so only characters below 128 can be written in this mode. Use UTF-8 for anything else.'
+        : '<strong>Character ' + (res.error.index + 1) + ' (' + ch + ') is outside ASCII.</strong> ASCII stops at code point 127; use UTF-8 to encode letters with accents or any non-Latin text.';
+      setStatus(msg, 'error');
+      return;
+    }
+    var unitBits = encSel.value === 'utf16' ? 16 : 8;
+    var units = res.units;
+    var truncated = false;
+    if (units.length > MAX_UNITS) {
+      units = units.slice(0, MAX_UNITS);
+      truncated = true;
+    }
+    out.value = units.join(' ');
+    var text = 'Encoded ' + plural(units.length, unitBits === 16 ? '16-bit unit' : 'byte', unitBits === 16 ? '16-bit units' : 'bytes') + ' as ' + encName() + ' binary.';
+    if (truncated) text += ' Output stopped at ' + fmt(units.length) + ' units to keep the tab responsive; shorter input produces complete output.';
+    if (res.note) text += ' ' + res.note;
+    setStatus(text, truncated ? 'warn' : 'ok');
+  }
+
+  /* ---------- main ---------- */
+  function run() {
+    var raw = src.value;
+    if (raw.length > MAX_INPUT) {
+      out.value = '';
+      setStatus('That input is ' + fmt(raw.length) + ' characters. The limit is 100,000 — trim it and the conversion resumes on its own.', 'error');
+      return;
+    }
+    if (!raw.trim()) {
+      out.value = '';
+      setStatus('Ready. Paste binary above, or load the example.', '');
+      return;
+    }
+    if (mode === 'decode') runDecode(raw); else runEncode(raw);
+  }
+
+  function schedule() {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(run, 150);
+  }
+
+  function setMode(next) {
+    mode = next;
+    for (var i = 0; i < radios.length; i++) radios[i].checked = radios[i].value === next;
+    var decode = next === 'decode';
+    srcLabel.textContent = decode ? 'Binary input' : 'English text input';
+    outLabel.textContent = decode ? 'English output' : 'Binary output';
+    src.placeholder = decode ? '01001000 01101001' : 'Hi';
+    out.placeholder = decode ? 'Hi' : '01001000 01101001';
+  }
+
+  src.addEventListener('input', schedule);
+  encSel.addEventListener('change', run);
+  for (var i = 0; i < radios.length; i++) {
+    radios[i].addEventListener('change', function () {
+      if (this.checked) { setMode(this.value); run(); src.focus(); }
+    });
+  }
+
+  document.getElementById('convert').addEventListener('click', function () {
+    if (timer) clearTimeout(timer);
+    run();
+  });
+
+  document.getElementById('swap').addEventListener('click', function () {
+    var produced = out.value;
+    setMode(mode === 'decode' ? 'encode' : 'decode');
+    if (produced) src.value = produced;
+    run();
+    src.focus();
+  });
+
+  document.getElementById('clear').addEventListener('click', function () {
+    if (timer) clearTimeout(timer);
+    src.value = '';
+    out.value = '';
+    setStatus('Cleared. Paste new input or load the example.', '');
+    src.focus();
+  });
+
+  document.getElementById('example').addEventListener('click', function () {
+    if (timer) clearTimeout(timer);
+    src.value = mode === 'decode'
+      ? '0b01001000 0b01101001 00100000 01110100 01101000 01100101 01110010 01100101'
+      : 'Hi there';
+    run();
+    src.focus();
+  });
+
+  document.getElementById('copy').addEventListener('click', function () {
+    var text = out.value;
+    if (!text) { setStatus('There is nothing to copy yet — convert something first.', 'error'); return; }
+    function done() { setStatus('Copied ' + fmt(text.length) + ' characters to the clipboard.', 'ok'); }
+    function fallback() {
+      out.focus();
+      out.select();
+      try {
+        if (document.execCommand('copy')) done();
+        else setStatus('Copy was blocked. Select the output and press Ctrl or Cmd + C.', 'error');
+      } catch (e) {
+        setStatus('Copy was blocked. Select the output and press Ctrl or Cmd + C.', 'error');
+      }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else {
+      fallback();
+    }
+  });
+
+  /* ---------- chart ---------- */
+  var filter = document.getElementById('chart-filter');
+  var tbody = document.querySelector('#ascii-chart tbody');
+  var rows = Array.prototype.slice.call(tbody.rows);
+  var countEl = document.getElementById('chart-count');
+
+  function visibleRows() {
+    return rows.filter(function (r) { return !r.hidden; });
+  }
+
+  filter.addEventListener('input', function () {
+    var q = this.value.trim().toLowerCase();
+    var shown = 0;
+    rows.forEach(function (r) {
+      var hit = !q || r.textContent.toLowerCase().indexOf(q) !== -1;
+      r.hidden = !hit;
+      if (hit) shown++;
+    });
+    countEl.textContent = q
+      ? shown + ' of ' + rows.length + ' characters match.'
+      : rows.length + ' characters shown.';
+  });
+
+  document.getElementById('copy-table').addEventListener('click', function () {
+    var list = visibleRows();
+    if (!list.length) { countEl.textContent = 'Nothing to copy — the filter matches no rows.'; return; }
+    var lines = ['Char\tName\tDecimal\tBinary\tHex'];
+    list.forEach(function (r) {
+      var cells = Array.prototype.map.call(r.cells, function (c) { return c.textContent.trim(); });
+      lines.push(cells.join('\t'));
+    });
+    var text = lines.join('\n');
+    function done() { countEl.textContent = 'Copied ' + list.length + ' rows as tab-separated text.'; }
+    function fallback() {
+      var box = document.createElement('textarea');
+      box.value = text;
+      box.setAttribute('readonly', '');
+      box.style.position = 'fixed';
+      box.style.left = '-9999px';
+      document.body.appendChild(box);
+      box.select();
+      try { document.execCommand('copy'); done(); } catch (e) { countEl.textContent = 'Copy was blocked by the browser.'; }
+      document.body.removeChild(box);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  });
+})();
+</script>
+</body>
+</html>
