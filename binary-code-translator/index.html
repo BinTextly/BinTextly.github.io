@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Binary Code Translator - Convert Binary to Text and Back</title>
+<meta name="description" content="Free binary code translator: turn binary code into readable text, and any English text back into binary. Handles spaces, line breaks, 0b prefixes, UTF-8.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b47c4'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='13' font-weight='bold' fill='%23ffffff' text-anchor='middle'%3E0b%3C/text%3E%3C/svg%3E">
+<link rel="canonical" href="https://bintextly.github.io/binary-code-translator/">
+<style>
+:root{--ink:#181b20;--muted:#4b5462;--line:#d7dce4;--soft:#f4f6f9;--accent:#0b47c4;--accent-dark:#08379a;--ok:#0a6b3d;--warn:#8a5300;--err:#b42318}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#fff;color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent);text-underline-offset:2px}
+a:hover{color:var(--accent-dark)}
+.wrap{max-width:800px;margin:0 auto;padding:0 16px}
+.skip{position:absolute;left:-9999px;top:0;background:#fff;padding:8px 12px;z-index:10;font-weight:600}
+.skip:focus{left:8px;top:8px;outline:3px solid var(--accent)}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.site{border-bottom:1px solid var(--line);padding:10px 0}
+.brand{font-weight:700;text-decoration:none;color:var(--ink);font-size:15px}
+main{padding:18px 0 8px}
+h1{font-size:1.625rem;line-height:1.2;margin:0 0 8px;letter-spacing:-.01em}
+.lede{margin:0 0 16px;color:var(--muted);font-size:1rem}
+h2{font-size:1.1875rem;line-height:1.3;margin:32px 0 10px;letter-spacing:-.01em}
+h3{font-size:1rem;line-height:1.35;margin:22px 0 6px}
+.sec-label{font-size:1.1875rem;font-weight:700;line-height:1.3;margin:32px 0 10px;letter-spacing:-.01em}
+h3.sec-h3{font-size:1.1875rem;margin:32px 0 10px;letter-spacing:-.01em}
+p{margin:0 0 13px}
+ul,ol{margin:0 0 14px;padding-left:22px}
+li{margin:0 0 6px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:1px 4px}
+.tool{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fbfcfe;margin:0 0 18px}
+.mode{border:0;padding:0;margin:0 0 12px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.mode .opt label{display:flex;align-items:center;justify-content:center;min-height:44px;padding:6px 8px;border:1px solid #b9c1cd;border-radius:9px;background:#fff;font-size:.875rem;font-weight:600;cursor:pointer;text-align:center;line-height:1.2}
+.mode .opt input{position:absolute;opacity:0;width:1px;height:1px}
+.mode .opt input:checked+label{background:var(--accent);border-color:var(--accent);color:#fff}
+.mode .opt input:focus-visible+label{outline:3px solid var(--accent);outline-offset:2px}
+label{display:block;font-weight:600;font-size:.9375rem;margin-bottom:5px}
+textarea,select,input[type=search]{width:100%;font:inherit;font-size:16px;color:var(--ink);background:#fff;border:1px solid #b9c1cd;border-radius:9px;padding:9px 11px}
+textarea{min-height:92px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;line-height:1.5;resize:vertical}
+textarea[readonly]{background:#f7f9fc}
+input[type=search]{min-height:44px}
+::placeholder{color:#636b78}
+textarea:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.field{margin-bottom:12px}
+.hint{font-size:.8125rem;color:var(--muted);margin:5px 0 0}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
+.btn{min-height:44px;padding:8px 13px;border-radius:9px;border:1px solid #b9c1cd;background:#fff;color:var(--ink);font:inherit;font-size:.875rem;font-weight:600;cursor:pointer}
+.btn:hover{background:#eef2f8}
+.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
+.status{margin:12px 0 0;font-size:.875rem;line-height:1.5;color:var(--muted);border-left:3px solid var(--line);padding:2px 0 2px 10px;min-height:22px}
+.status-ok{border-color:var(--ok);color:var(--ok)}
+.status-warn{border-color:#b07800;color:var(--warn)}
+.status-error{border-color:var(--err);color:var(--err)}
+pre.bits{margin:0 0 14px;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:9px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.8125rem;line-height:1.7;overflow-x:auto}
+.tools-search{display:grid;gap:8px;margin:12px 0 10px}
+@media(min-width:520px){.tools-search{grid-template-columns:1fr auto;align-items:center}}
+.table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:9px}
+table.ref{width:100%;border-collapse:collapse;font-size:.875rem}
+table.ref caption{text-align:left;font-size:.8125rem;color:var(--muted);padding:0 0 8px}
+table.ref th,table.ref td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+table.ref thead th{background:var(--soft);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);position:sticky;top:0}
+table.ref tbody tr:last-child td{border-bottom:0}
+table.ref .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+table.ref .chr{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:700}
+table.ref .mini{min-height:32px;padding:4px 8px;font-size:.75rem;border:1px solid #b9c1cd;border-radius:7px;background:#fff;cursor:pointer;font-weight:600;color:var(--ink)}
+table.ref .mini:hover{background:#eef2f8}
+table.ref .mini:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.related{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.related li{border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin:0}
+.related a{font-weight:600}
+.related span{display:block;font-size:.875rem;color:var(--muted)}
+.faq h3{margin-top:20px}
+.faq p{margin-bottom:0}
+footer{border-top:1px solid var(--line);margin-top:40px;padding:18px 0 32px;font-size:.875rem;color:var(--muted)}
+footer p{margin:0}
+@media(max-width:520px){table.ref .hide-sm{display:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#tool">Skip to the converter</a>
+<header class="site"><div class="wrap"><a class="brand" href="../">BinTextly</a></div></header>
+
+<main class="wrap" id="main">
+  <h1>Binary Code Translator</h1>
+  <p class="lede">Paste ones and zeros to read them as text, or type text to see the binary that encodes it — both directions run in this page, with no upload and no waiting.</p>
+
+  <section class="tool" id="tool" aria-label="Binary code translator tool">
+
+    <fieldset class="mode">
+      <legend class="sr">Conversion direction</legend>
+      <div class="opt">
+        <input type="radio" name="direction" id="dir-decode" value="decode" checked>
+        <label for="dir-decode">Binary &rarr; Text</label>
+      </div>
+      <div class="opt">
+        <input type="radio" name="direction" id="dir-encode" value="encode">
+        <label for="dir-encode">Text &rarr; Binary</label>
+      </div>
+    </fieldset>
+
+    <div class="field">
+      <label for="input" id="label-input">Binary code input</label>
+      <textarea id="input" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="01001000 01100101 01101100 01101100 01101111"></textarea>
+      <p class="hint" id="counter">0 of 100,000 characters</p>
+    </div>
+
+    <div class="field">
+      <label for="encoding">Character encoding</label>
+      <select id="encoding">
+        <option value="utf8" selected>UTF-8 (default)</option>
+        <option value="ascii">ASCII (7-bit)</option>
+        <option value="utf16">UTF-16 (little-endian)</option>
+        <option value="gbk">GBK (Chinese)</option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn btn-primary" id="btn-convert">Convert</button>
+      <button type="button" class="btn" id="btn-swap">Swap</button>
+      <button type="button" class="btn" id="btn-copy">Copy result</button>
+      <button type="button" class="btn" id="btn-example">Load example</button>
+      <button type="button" class="btn" id="btn-clear">Clear</button>
+    </div>
+
+    <div class="field" style="margin-top:14px">
+      <label for="output" id="label-output">Decoded text</label>
+      <textarea id="output" readonly spellcheck="false" placeholder="The result appears here."></textarea>
+    </div>
+
+    <p class="status" id="status" role="status" aria-live="polite">Paste binary code or type text. The result appears here as you type.</p>
+  </section>
+
+  <h2>How to Use the Binary Code Translator</h2>
+  <p>The binary code translator runs in both directions, so the first decision is which way you are heading: binary to text, or text to binary.</p>
+  <ol>
+    <li><strong>Pick a direction.</strong> The two tabs at the top of the tool switch between Binary &rarr; Text and Text &rarr; Binary, and the labels on the input and output boxes change with them.</li>
+    <li><strong>Add your input.</strong> Paste from a log line, a memory dump, a chat message, or type straight into the box. On the binary side, spaces, commas, tabs and line breaks are treated as separators, and a 0b prefix in front of each group is stripped before anything is decoded.</li>
+    <li><strong>Choose the encoding.</strong> UTF-8 is the default and fits most text. ASCII, UTF-16 and GBK are there for older data and for strict checks.</li>
+    <li><strong>Use the result.</strong> The output updates about 150&nbsp;ms after you stop typing. Copy it, clear the form, or press Swap to push the result through the opposite direction and confirm it survives the round trip.</li>
+  </ol>
+  <p>The Convert button exists for the cases where you want an explicit action: a screen-reader announcement, a screenshot, or a paste you want to inspect before committing. Auto-conversion and the button call the same function, so the output is identical either way — the button simply skips the debounce.</p>
+
+  <h2>Text to Binary and Back</h2>
+  <p>A binary code translator is only as good as its round trip: whatever you decode should encode back to the same bytes, and whatever you encode should decode back to the same characters.</p>
+  <p>That symmetry depends on the encoding setting, not on the tool. Encode the word <em>café</em> as UTF-8 and you get seven bytes, because <em>é</em> takes two. Encode it as ASCII and the fourth character is rejected, since <em>é</em> sits at 233 and ASCII stops at 127. The same string in UTF-16 doubles every character to two bytes, which is why UTF-16 output looks twice as long as the text you typed. GBK lands in between: one byte for Latin letters, two for most Chinese characters.</p>
+  <p>The Swap button makes that symmetry visible. Decode a binary string, press Swap, and the decoded text becomes the input for the encode direction, producing the original bits whenever the encoding matches. When it doesn't match, the difference is informative rather than broken: a string encoded as UTF-16 and decoded as UTF-8 comes back with a null character between every letter, which tells you the source was almost certainly a Windows tool.</p>
+  <p>Invalid input is reported, never silently dropped. If a character other than 0 or 1 appears where a bit should be, the status line names its position in your original paste, quotes the character, and shows the surrounding text so you can find it. Text that cannot be represented in the selected encoding gets the same treatment, with the character number and the offending symbol. Nothing is truncated and nothing is guessed.</p>
+
+  <h2>Binary Code Formats Explained</h2>
+  <p>Binary code arrives in more shapes than most people expect, and a binary code translator that accepts only one of them forces you to reformat by hand before you can do anything useful.</p>
+  <p>The usual form is eight bits per character with spaces between groups: <code>01001000 01101001</code>. The spaces carry no data. They exist so a human can count the boundaries without losing their place. Some tools print a 0b prefix, a convention borrowed from Python, C++14 and Rust, where <code>0b01001000</code> is a single binary literal. Others print a continuous stream with no separators at all, which is what you get from a memory viewer or a network capture. This page accepts all three and also tolerates commas, tabs and line breaks, because that is what binary looks like when it is pasted out of a spreadsheet.</p>
+  <p>Hex is the other shorthand you will meet. Four bits map to one hex digit, so a byte becomes two characters: <code>01001000</code> is 48, and <code>01101001</code> is 69. Hex is shorter and easier to scan in a column, but it hides the bit pattern, which is why tutorials still show binary when the point is to explain how a byte is built.</p>
+
+  <h3>How a byte becomes a letter</h3>
+  <p>A byte holds a number from 0 to 255. ASCII assigns the first 128 values to letters, digits, punctuation and control codes, so a byte can become a character through a single lookup. Take the word <em>Hello</em>:</p>
+  <pre class="bits">01001000  =   72  =  H
+01100101  =  101  =  e
+01101100  =  108  =  l
+01101100  =  108  =  l
+01101111  =  111  =  o</pre>
+  <p>Read the first group left to right and the weights are 128, 64, 32, 16, 8, 4, 2, 1. Only the 64 and the 8 are set, so the value is 72, and 72 is <em>H</em>. The same method gives <code>01101001</code> = 105 = <em>i</em>, which is why <code>01001000 01101001</code> reads as <em>Hi</em> — a two-character check worth running against any decoder you have not used before.</p>
+  <p>UTF-8 keeps those 128 values identical and uses two to four bytes above them, so an English string encodes to exactly the same bits in both encodings. That compatibility is why UTF-8 took over, and why a UTF-8 decoder is a reasonable default when you have no idea where a binary string came from. Strip away the notation and a binary code translator is a byte splitter plus a lookup table; the rest is deciding which table the bytes were written with.</p>
+
+  <h3 class="sec-h3">ASCII and UTF-8 reference table</h3>
+  <p>The table below lists every printable ASCII character with its 8-bit binary, decimal and hex value. UTF-8 leaves the range 0–127 untouched, so these are also the UTF-8 bytes for the same characters.</p>
+  <div class="tools-search">
+    <div>
+      <label for="table-search">Search the table</label>
+      <input type="search" id="table-search" placeholder="Try 01000001, 65, or a character" autocomplete="off">
+    </div>
+    <button type="button" class="btn" id="table-copy">Copy table</button>
+  </div>
+  <p class="hint" id="table-count" aria-live="polite">95 characters</p>
+  <div class="table-scroll">
+    <table class="ref" id="ref-table">
+      <caption>ASCII and UTF-8 byte values. Click Copy to put a single byte on the clipboard.</caption>
+      <thead>
+        <tr><th scope="col">Char</th><th scope="col">Binary</th><th scope="col" class="hide-sm">Decimal</th><th scope="col" class="hide-sm">Hex</th><th scope="col">Copy</th></tr>
+      </thead>
+      <tbody id="table-body">
+<tr><td class="chr">space</td><td class="mono">00100000</td><td class="mono hide-sm">32</td><td class="mono hide-sm">20</td><td><button type="button" class="mini" data-bin="00100000" data-char="space" aria-label="Copy binary for space">Copy</button></td></tr>
+<tr><td class="chr">!</td><td class="mono">00100001</td><td class="mono hide-sm">33</td><td class="mono hide-sm">21</td><td><button type="button" class="mini" data-bin="00100001" data-char="!" aria-label="Copy binary for !">Copy</button></td></tr>
+<tr><td class="chr">"</td><td class="mono">00100010</td><td class="mono hide-sm">34</td><td class="mono hide-sm">22</td><td><button type="button" class="mini" data-bin="00100010" data-char="&quot;" aria-label="Copy binary for &quot;">Copy</button></td></tr>
+<tr><td class="chr">#</td><td class="mono">00100011</td><td class="mono hide-sm">35</td><td class="mono hide-sm">23</td><td><button type="button" class="mini" data-bin="00100011" data-char="#" aria-label="Copy binary for #">Copy</button></td></tr>
+<tr><td class="chr">$</td><td class="mono">00100100</td><td class="mono hide-sm">36</td><td class="mono hide-sm">24</td><td><button type="button" class="mini" data-bin="00100100" data-char="$" aria-label="Copy binary for $">Copy</button></td></tr>
+<tr><td class="chr">%</td><td class="mono">00100101</td><td class="mono hide-sm">37</td><td class="mono hide-sm">25</td><td><button type="button" class="mini" data-bin="00100101" data-char="%" aria-label="Copy binary for %">Copy</button></td></tr>
+<tr><td class="chr">&amp;</td><td class="mono">00100110</td><td class="mono hide-sm">38</td><td class="mono hide-sm">26</td><td><button type="button" class="mini" data-bin="00100110" data-char="&amp;" aria-label="Copy binary for &amp;">Copy</button></td></tr>
+<tr><td class="chr">'</td><td class="mono">00100111</td><td class="mono hide-sm">39</td><td class="mono hide-sm">27</td><td><button type="button" class="mini" data-bin="00100111" data-char="&#x27;" aria-label="Copy binary for &#x27;">Copy</button></td></tr>
+<tr><td class="chr">(</td><td class="mono">00101000</td><td class="mono hide-sm">40</td><td class="mono hide-sm">28</td><td><button type="button" class="mini" data-bin="00101000" data-char="(" aria-label="Copy binary for (">Copy</button></td></tr>
+<tr><td class="chr">)</td><td class="mono">00101001</td><td class="mono hide-sm">41</td><td class="mono hide-sm">29</td><td><button type="button" class="mini" data-bin="00101001" data-char=")" aria-label="Copy binary for )">Copy</button></td></tr>
+<tr><td class="chr">*</td><td class="mono">00101010</td><td class="mono hide-sm">42</td><td class="mono hide-sm">2A</td><td><button type="button" class="mini" data-bin="00101010" data-char="*" aria-label="Copy binary for *">Copy</button></td></tr>
+<tr><td class="chr">+</td><td class="mono">00101011</td><td class="mono hide-sm">43</td><td class="mono hide-sm">2B</td><td><button type="button" class="mini" data-bin="00101011" data-char="+" aria-label="Copy binary for +">Copy</button></td></tr>
+<tr><td class="chr">,</td><td class="mono">00101100</td><td class="mono hide-sm">44</td><td class="mono hide-sm">2C</td><td><button type="button" class="mini" data-bin="00101100" data-char="," aria-label="Copy binary for ,">Copy</button></td></tr>
+<tr><td class="chr">-</td><td class="mono">00101101</td><td class="mono hide-sm">45</td><td class="mono hide-sm">2D</td><td><button type="button" class="mini" data-bin="00101101" data-char="-" aria-label="Copy binary for -">Copy</button></td></tr>
+<tr><td class="chr">.</td><td class="mono">00101110</td><td class="mono hide-sm">46</td><td class="mono hide-sm">2E</td><td><button type="button" class="mini" data-bin="00101110" data-char="." aria-label="Copy binary for .">Copy</button></td></tr>
+<tr><td class="chr">/</td><td class="mono">00101111</td><td class="mono hide-sm">47</td><td class="mono hide-sm">2F</td><td><button type="button" class="mini" data-bin="00101111" data-char="/" aria-label="Copy binary for /">Copy</button></td></tr>
+<tr><td class="chr">0</td><td class="mono">00110000</td><td class="mono hide-sm">48</td><td class="mono hide-sm">30</td><td><button type="button" class="mini" data-bin="00110000" data-char="0" aria-label="Copy binary for 0">Copy</button></td></tr>
+<tr><td class="chr">1</td><td class="mono">00110001</td><td class="mono hide-sm">49</td><td class="mono hide-sm">31</td><td><button type="button" class="mini" data-bin="00110001" data-char="1" aria-label="Copy binary for 1">Copy</button></td></tr>
+<tr><td class="chr">2</td><td class="mono">00110010</td><td class="mono hide-sm">50</td><td class="mono hide-sm">32</td><td><button type="button" class="mini" data-bin="00110010" data-char="2" aria-label="Copy binary for 2">Copy</button></td></tr>
+<tr><td class="chr">3</td><td class="mono">00110011</td><td class="mono hide-sm">51</td><td class="mono hide-sm">33</td><td><button type="button" class="mini" data-bin="00110011" data-char="3" aria-label="Copy binary for 3">Copy</button></td></tr>
+<tr><td class="chr">4</td><td class="mono">00110100</td><td class="mono hide-sm">52</td><td class="mono hide-sm">34</td><td><button type="button" class="mini" data-bin="00110100" data-char="4" aria-label="Copy binary for 4">Copy</button></td></tr>
+<tr><td class="chr">5</td><td class="mono">00110101</td><td class="mono hide-sm">53</td><td class="mono hide-sm">35</td><td><button type="button" class="mini" data-bin="00110101" data-char="5" aria-label="Copy binary for 5">Copy</button></td></tr>
+<tr><td class="chr">6</td><td class="mono">00110110</td><td class="mono hide-sm">54</td><td class="mono hide-sm">36</td><td><button type="button" class="mini" data-bin="00110110" data-char="6" aria-label="Copy binary for 6">Copy</button></td></tr>
+<tr><td class="chr">7</td><td class="mono">00110111</td><td class="mono hide-sm">55</td><td class="mono hide-sm">37</td><td><button type="button" class="mini" data-bin="00110111" data-char="7" aria-label="Copy binary for 7">Copy</button></td></tr>
+<tr><td class="chr">8</td><td class="mono">00111000</td><td class="mono hide-sm">56</td><td class="mono hide-sm">38</td><td><button type="button" class="mini" data-bin="00111000" data-char="8" aria-label="Copy binary for 8">Copy</button></td></tr>
+<tr><td class="chr">9</td><td class="mono">00111001</td><td class="mono hide-sm">57</td><td class="mono hide-sm">39</td><td><button type="button" class="mini" data-bin="00111001" data-char="9" aria-label="Copy binary for 9">Copy</button></td></tr>
+<tr><td class="chr">:</td><td class="mono">00111010</td><td class="mono hide-sm">58</td><td class="mono hide-sm">3A</td><td><button type="button" class="mini" data-bin="00111010" data-char=":" aria-label="Copy binary for :">Copy</button></td></tr>
+<tr><td class="chr">;</td><td class="mono">00111011</td><td class="mono hide-sm">59</td><td class="mono hide-sm">3B</td><td><button type="button" class="mini" data-bin="00111011" data-char=";" aria-label="Copy binary for ;">Copy</button></td></tr>
+<tr><td class="chr">&lt;</td><td class="mono">00111100</td><td class="mono hide-sm">60</td><td class="mono hide-sm">3C</td><td><button type="button" class="mini" data-bin="00111100" data-char="&lt;" aria-label="Copy binary for &lt;">Copy</button></td></tr>
+<tr><td class="chr">=</td><td class="mono">00111101</td><td class="mono hide-sm">61</td><td class="mono hide-sm">3D</td><td><button type="button" class="mini" data-bin="00111101" data-char="=" aria-label="Copy binary for =">Copy</button></td></tr>
+<tr><td class="chr">&gt;</td><td class="mono">00111110</td><td class="mono hide-sm">62</td><td class="mono hide-sm">3E</td><td><button type="button" class="mini" data-bin="00111110" data-char="&gt;" aria-label="Copy binary for &gt;">Copy</button></td></tr>
+<tr><td class="chr">?</td><td class="mono">00111111</td><td class="mono hide-sm">63</td><td class="mono hide-sm">3F</td><td><button type="button" class="mini" data-bin="00111111" data-char="?" aria-label="Copy binary for ?">Copy</button></td></tr>
+<tr><td class="chr">@</td><td class="mono">01000000</td><td class="mono hide-sm">64</td><td class="mono hide-sm">40</td><td><button type="button" class="mini" data-bin="01000000" data-char="@" aria-label="Copy binary for @">Copy</button></td></tr>
+<tr><td class="chr">A</td><td class="mono">01000001</td><td class="mono hide-sm">65</td><td class="mono hide-sm">41</td><td><button type="button" class="mini" data-bin="01000001" data-char="A" aria-label="Copy binary for A">Copy</button></td></tr>
+<tr><td class="chr">B</td><td class="mono">01000010</td><td class="mono hide-sm">66</td><td class="mono hide-sm">42</td><td><button type="button" class="mini" data-bin="01000010" data-char="B" aria-label="Copy binary for B">Copy</button></td></tr>
+<tr><td class="chr">C</td><td class="mono">01000011</td><td class="mono hide-sm">67</td><td class="mono hide-sm">43</td><td><button type="button" class="mini" data-bin="01000011" data-char="C" aria-label="Copy binary for C">Copy</button></td></tr>
+<tr><td class="chr">D</td><td class="mono">01000100</td><td class="mono hide-sm">68</td><td class="mono hide-sm">44</td><td><button type="button" class="mini" data-bin="01000100" data-char="D" aria-label="Copy binary for D">Copy</button></td></tr>
+<tr><td class="chr">E</td><td class="mono">01000101</td><td class="mono hide-sm">69</td><td class="mono hide-sm">45</td><td><button type="button" class="mini" data-bin="01000101" data-char="E" aria-label="Copy binary for E">Copy</button></td></tr>
+<tr><td class="chr">F</td><td class="mono">01000110</td><td class="mono hide-sm">70</td><td class="mono hide-sm">46</td><td><button type="button" class="mini" data-bin="01000110" data-char="F" aria-label="Copy binary for F">Copy</button></td></tr>
+<tr><td class="chr">G</td><td class="mono">01000111</td><td class="mono hide-sm">71</td><td class="mono hide-sm">47</td><td><button type="button" class="mini" data-bin="01000111" data-char="G" aria-label="Copy binary for G">Copy</button></td></tr>
+<tr><td class="chr">H</td><td class="mono">01001000</td><td class="mono hide-sm">72</td><td class="mono hide-sm">48</td><td><button type="button" class="mini" data-bin="01001000" data-char="H" aria-label="Copy binary for H">Copy</button></td></tr>
+<tr><td class="chr">I</td><td class="mono">01001001</td><td class="mono hide-sm">73</td><td class="mono hide-sm">49</td><td><button type="button" class="mini" data-bin="01001001" data-char="I" aria-label="Copy binary for I">Copy</button></td></tr>
+<tr><td class="chr">J</td><td class="mono">01001010</td><td class="mono hide-sm">74</td><td class="mono hide-sm">4A</td><td><button type="button" class="mini" data-bin="01001010" data-char="J" aria-label="Copy binary for J">Copy</button></td></tr>
+<tr><td class="chr">K</td><td class="mono">01001011</td><td class="mono hide-sm">75</td><td class="mono hide-sm">4B</td><td><button type="button" class="mini" data-bin="01001011" data-char="K" aria-label="Copy binary for K">Copy</button></td></tr>
+<tr><td class="chr">L</td><td class="mono">01001100</td><td class="mono hide-sm">76</td><td class="mono hide-sm">4C</td><td><button type="button" class="mini" data-bin="01001100" data-char="L" aria-label="Copy binary for L">Copy</button></td></tr>
+<tr><td class="chr">M</td><td class="mono">01001101</td><td class="mono hide-sm">77</td><td class="mono hide-sm">4D</td><td><button type="button" class="mini" data-bin="01001101" data-char="M" aria-label="Copy binary for M">Copy</button></td></tr>
+<tr><td class="chr">N</td><td class="mono">01001110</td><td class="mono hide-sm">78</td><td class="mono hide-sm">4E</td><td><button type="button" class="mini" data-bin="01001110" data-char="N" aria-label="Copy binary for N">Copy</button></td></tr>
+<tr><td class="chr">O</td><td class="mono">01001111</td><td class="mono hide-sm">79</td><td class="mono hide-sm">4F</td><td><button type="button" class="mini" data-bin="01001111" data-char="O" aria-label="Copy binary for O">Copy</button></td></tr>
+<tr><td class="chr">P</td><td class="mono">01010000</td><td class="mono hide-sm">80</td><td class="mono hide-sm">50</td><td><button type="button" class="mini" data-bin="01010000" data-char="P" aria-label="Copy binary for P">Copy</button></td></tr>
+<tr><td class="chr">Q</td><td class="mono">01010001</td><td class="mono hide-sm">81</td><td class="mono hide-sm">51</td><td><button type="button" class="mini" data-bin="01010001" data-char="Q" aria-label="Copy binary for Q">Copy</button></td></tr>
+<tr><td class="chr">R</td><td class="mono">01010010</td><td class="mono hide-sm">82</td><td class="mono hide-sm">52</td><td><button type="button" class="mini" data-bin="01010010" data-char="R" aria-label="Copy binary for R">Copy</button></td></tr>
+<tr><td class="chr">S</td><td class="mono">01010011</td><td class="mono hide-sm">83</td><td class="mono hide-sm">53</td><td><button type="button" class="mini" data-bin="01010011" data-char="S" aria-label="Copy binary for S">Copy</button></td></tr>
+<tr><td class="chr">T</td><td class="mono">01010100</td><td class="mono hide-sm">84</td><td class="mono hide-sm">54</td><td><button type="button" class="mini" data-bin="01010100" data-char="T" aria-label="Copy binary for T">Copy</button></td></tr>
+<tr><td class="chr">U</td><td class="mono">01010101</td><td class="mono hide-sm">85</td><td class="mono hide-sm">55</td><td><button type="button" class="mini" data-bin="01010101" data-char="U" aria-label="Copy binary for U">Copy</button></td></tr>
+<tr><td class="chr">V</td><td class="mono">01010110</td><td class="mono hide-sm">86</td><td class="mono hide-sm">56</td><td><button type="button" class="mini" data-bin="01010110" data-char="V" aria-label="Copy binary for V">Copy</button></td></tr>
+<tr><td class="chr">W</td><td class="mono">01010111</td><td class="mono hide-sm">87</td><td class="mono hide-sm">57</td><td><button type="button" class="mini" data-bin="01010111" data-char="W" aria-label="Copy binary for W">Copy</button></td></tr>
+<tr><td class="chr">X</td><td class="mono">01011000</td><td class="mono hide-sm">88</td><td class="mono hide-sm">58</td><td><button type="button" class="mini" data-bin="01011000" data-char="X" aria-label="Copy binary for X">Copy</button></td></tr>
+<tr><td class="chr">Y</td><td class="mono">01011001</td><td class="mono hide-sm">89</td><td class="mono hide-sm">59</td><td><button type="button" class="mini" data-bin="01011001" data-char="Y" aria-label="Copy binary for Y">Copy</button></td></tr>
+<tr><td class="chr">Z</td><td class="mono">01011010</td><td class="mono hide-sm">90</td><td class="mono hide-sm">5A</td><td><button type="button" class="mini" data-bin="01011010" data-char="Z" aria-label="Copy binary for Z">Copy</button></td></tr>
+<tr><td class="chr">[</td><td class="mono">01011011</td><td class="mono hide-sm">91</td><td class="mono hide-sm">5B</td><td><button type="button" class="mini" data-bin="01011011" data-char="[" aria-label="Copy binary for [">Copy</button></td></tr>
+<tr><td class="chr">\</td><td class="mono">01011100</td><td class="mono hide-sm">92</td><td class="mono hide-sm">5C</td><td><button type="button" class="mini" data-bin="01011100" data-char="\" aria-label="Copy binary for \">Copy</button></td></tr>
+<tr><td class="chr">]</td><td class="mono">01011101</td><td class="mono hide-sm">93</td><td class="mono hide-sm">5D</td><td><button type="button" class="mini" data-bin="01011101" data-char="]" aria-label="Copy binary for ]">Copy</button></td></tr>
+<tr><td class="chr">^</td><td class="mono">01011110</td><td class="mono hide-sm">94</td><td class="mono hide-sm">5E</td><td><button type="button" class="mini" data-bin="01011110" data-char="^" aria-label="Copy binary for ^">Copy</button></td></tr>
+<tr><td class="chr">_</td><td class="mono">01011111</td><td class="mono hide-sm">95</td><td class="mono hide-sm">5F</td><td><button type="button" class="mini" data-bin="01011111" data-char="_" aria-label="Copy binary for _">Copy</button></td></tr>
+<tr><td class="chr">`</td><td class="mono">01100000</td><td class="mono hide-sm">96</td><td class="mono hide-sm">60</td><td><button type="button" class="mini" data-bin="01100000" data-char="`" aria-label="Copy binary for `">Copy</button></td></tr>
+<tr><td class="chr">a</td><td class="mono">01100001</td><td class="mono hide-sm">97</td><td class="mono hide-sm">61</td><td><button type="button" class="mini" data-bin="01100001" data-char="a" aria-label="Copy binary for a">Copy</button></td></tr>
+<tr><td class="chr">b</td><td class="mono">01100010</td><td class="mono hide-sm">98</td><td class="mono hide-sm">62</td><td><button type="button" class="mini" data-bin="01100010" data-char="b" aria-label="Copy binary for b">Copy</button></td></tr>
+<tr><td class="chr">c</td><td class="mono">01100011</td><td class="mono hide-sm">99</td><td class="mono hide-sm">63</td><td><button type="button" class="mini" data-bin="01100011" data-char="c" aria-label="Copy binary for c">Copy</button></td></tr>
+<tr><td class="chr">d</td><td class="mono">01100100</td><td class="mono hide-sm">100</td><td class="mono hide-sm">64</td><td><button type="button" class="mini" data-bin="01100100" data-char="d" aria-label="Copy binary for d">Copy</button></td></tr>
+<tr><td class="chr">e</td><td class="mono">01100101</td><td class="mono hide-sm">101</td><td class="mono hide-sm">65</td><td><button type="button" class="mini" data-bin="01100101" data-char="e" aria-label="Copy binary for e">Copy</button></td></tr>
+<tr><td class="chr">f</td><td class="mono">01100110</td><td class="mono hide-sm">102</td><td class="mono hide-sm">66</td><td><button type="button" class="mini" data-bin="01100110" data-char="f" aria-label="Copy binary for f">Copy</button></td></tr>
+<tr><td class="chr">g</td><td class="mono">01100111</td><td class="mono hide-sm">103</td><td class="mono hide-sm">67</td><td><button type="button" class="mini" data-bin="01100111" data-char="g" aria-label="Copy binary for g">Copy</button></td></tr>
+<tr><td class="chr">h</td><td class="mono">01101000</td><td class="mono hide-sm">104</td><td class="mono hide-sm">68</td><td><button type="button" class="mini" data-bin="01101000" data-char="h" aria-label="Copy binary for h">Copy</button></td></tr>
+<tr><td class="chr">i</td><td class="mono">01101001</td><td class="mono hide-sm">105</td><td class="mono hide-sm">69</td><td><button type="button" class="mini" data-bin="01101001" data-char="i" aria-label="Copy binary for i">Copy</button></td></tr>
+<tr><td class="chr">j</td><td class="mono">01101010</td><td class="mono hide-sm">106</td><td class="mono hide-sm">6A</td><td><button type="button" class="mini" data-bin="01101010" data-char="j" aria-label="Copy binary for j">Copy</button></td></tr>
+<tr><td class="chr">k</td><td class="mono">01101011</td><td class="mono hide-sm">107</td><td class="mono hide-sm">6B</td><td><button type="button" class="mini" data-bin="01101011" data-char="k" aria-label="Copy binary for k">Copy</button></td></tr>
+<tr><td class="chr">l</td><td class="mono">01101100</td><td class="mono hide-sm">108</td><td class="mono hide-sm">6C</td><td><button type="button" class="mini" data-bin="01101100" data-char="l" aria-label="Copy binary for l">Copy</button></td></tr>
+<tr><td class="chr">m</td><td class="mono">01101101</td><td class="mono hide-sm">109</td><td class="mono hide-sm">6D</td><td><button type="button" class="mini" data-bin="01101101" data-char="m" aria-label="Copy binary for m">Copy</button></td></tr>
+<tr><td class="chr">n</td><td class="mono">01101110</td><td class="mono hide-sm">110</td><td class="mono hide-sm">6E</td><td><button type="button" class="mini" data-bin="01101110" data-char="n" aria-label="Copy binary for n">Copy</button></td></tr>
+<tr><td class="chr">o</td><td class="mono">01101111</td><td class="mono hide-sm">111</td><td class="mono hide-sm">6F</td><td><button type="button" class="mini" data-bin="01101111" data-char="o" aria-label="Copy binary for o">Copy</button></td></tr>
+<tr><td class="chr">p</td><td class="mono">01110000</td><td class="mono hide-sm">112</td><td class="mono hide-sm">70</td><td><button type="button" class="mini" data-bin="01110000" data-char="p" aria-label="Copy binary for p">Copy</button></td></tr>
+<tr><td class="chr">q</td><td class="mono">01110001</td><td class="mono hide-sm">113</td><td class="mono hide-sm">71</td><td><button type="button" class="mini" data-bin="01110001" data-char="q" aria-label="Copy binary for q">Copy</button></td></tr>
+<tr><td class="chr">r</td><td class="mono">01110010</td><td class="mono hide-sm">114</td><td class="mono hide-sm">72</td><td><button type="button" class="mini" data-bin="01110010" data-char="r" aria-label="Copy binary for r">Copy</button></td></tr>
+<tr><td class="chr">s</td><td class="mono">01110011</td><td class="mono hide-sm">115</td><td class="mono hide-sm">73</td><td><button type="button" class="mini" data-bin="01110011" data-char="s" aria-label="Copy binary for s">Copy</button></td></tr>
+<tr><td class="chr">t</td><td class="mono">01110100</td><td class="mono hide-sm">116</td><td class="mono hide-sm">74</td><td><button type="button" class="mini" data-bin="01110100" data-char="t" aria-label="Copy binary for t">Copy</button></td></tr>
+<tr><td class="chr">u</td><td class="mono">01110101</td><td class="mono hide-sm">117</td><td class="mono hide-sm">75</td><td><button type="button" class="mini" data-bin="01110101" data-char="u" aria-label="Copy binary for u">Copy</button></td></tr>
+<tr><td class="chr">v</td><td class="mono">01110110</td><td class="mono hide-sm">118</td><td class="mono hide-sm">76</td><td><button type="button" class="mini" data-bin="01110110" data-char="v" aria-label="Copy binary for v">Copy</button></td></tr>
+<tr><td class="chr">w</td><td class="mono">01110111</td><td class="mono hide-sm">119</td><td class="mono hide-sm">77</td><td><button type="button" class="mini" data-bin="01110111" data-char="w" aria-label="Copy binary for w">Copy</button></td></tr>
+<tr><td class="chr">x</td><td class="mono">01111000</td><td class="mono hide-sm">120</td><td class="mono hide-sm">78</td><td><button type="button" class="mini" data-bin="01111000" data-char="x" aria-label="Copy binary for x">Copy</button></td></tr>
+<tr><td class="chr">y</td><td class="mono">01111001</td><td class="mono hide-sm">121</td><td class="mono hide-sm">79</td><td><button type="button" class="mini" data-bin="01111001" data-char="y" aria-label="Copy binary for y">Copy</button></td></tr>
+<tr><td class="chr">z</td><td class="mono">01111010</td><td class="mono hide-sm">122</td><td class="mono hide-sm">7A</td><td><button type="button" class="mini" data-bin="01111010" data-char="z" aria-label="Copy binary for z">Copy</button></td></tr>
+<tr><td class="chr">{</td><td class="mono">01111011</td><td class="mono hide-sm">123</td><td class="mono hide-sm">7B</td><td><button type="button" class="mini" data-bin="01111011" data-char="{" aria-label="Copy binary for {">Copy</button></td></tr>
+<tr><td class="chr">|</td><td class="mono">01111100</td><td class="mono hide-sm">124</td><td class="mono hide-sm">7C</td><td><button type="button" class="mini" data-bin="01111100" data-char="|" aria-label="Copy binary for |">Copy</button></td></tr>
+<tr><td class="chr">}</td><td class="mono">01111101</td><td class="mono hide-sm">125</td><td class="mono hide-sm">7D</td><td><button type="button" class="mini" data-bin="01111101" data-char="}" aria-label="Copy binary for }">Copy</button></td></tr>
+<tr><td class="chr">~</td><td class="mono">01111110</td><td class="mono hide-sm">126</td><td class="mono hide-sm">7E</td><td><button type="button" class="mini" data-bin="01111110" data-char="~" aria-label="Copy binary for ~">Copy</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="hint">Control characters such as tab (<code>00001001</code>) and line feed (<code>00001010</code>) are left out because they do not render, but they decode normally if they appear in your input.</p>
+
+  <section aria-labelledby="related-title">
+  <p class="sec-label" id="related-title">Related converters</p>
+  <p>If you only need one direction, a dedicated page is usually faster than switching modes here.</p>
+  <ul class="related">
+    <li><a href="../binary-to-english/">Read binary code as English text</a><span>Paste a string of bytes and get the plain-language output, with a step-by-step reading guide.</span></li>
+    <li><a href="../text-to-binary/">Encode English text into binary</a><span>The encode direction on its own, with byte counts and copy-ready 8-bit groups.</span></li>
+    <li><a href="../ascii-to-binary/">Convert ASCII characters to binary</a><span>One character in, one byte out, for checking a single value against the chart.</span></li>
+    <li><a href="../binary-to-ascii/">Decode binary to ASCII characters</a><span>A byte-by-byte view for data that is known to stay inside the 0–127 range.</span></li>
+    <li><a href="../binary-to-decimal/">Convert binary to decimal</a><span>Turn an 8-bit group into the number it represents, with the place values shown.</span></li>
+    <li><a href="../hex-to-binary/">Expand hex values into binary</a><span>Each hex digit becomes four bits, which is the quickest way to read a byte dump.</span></li>
+  </ul>
+  </section>
+
+  <section class="faq" aria-labelledby="faq-title">
+  <p class="sec-label" id="faq-title">Frequently asked questions</p>
+    <h3>How do I read binary code by hand?</h3>
+    <p>Split the string into groups of eight bits, starting from the left. Each group is one byte, and its decimal value points to a character: 01001000 is 64 + 8, so 72, which is H in ASCII. The spaces between groups are only there to help you see the boundaries.</p>
+
+    <h3>What happens to spaces, commas and line breaks in the input?</h3>
+    <p>They are ignored. Spaces, tabs, commas and line breaks are treated as separators and removed before decoding, so pasting a column of bytes from a debugger works the same as pasting one long string.</p>
+
+    <h3>Can I convert binary code without spaces?</h3>
+    <p>Yes. The input is read as a continuous bit stream and cut into bytes every eight bits, so 0100100001101001 decodes to Hi. If the total is not a multiple of eight, the leftover bits at the end are ignored and the status line tells you how many were dropped.</p>
+
+    <h3>Which encoding should I choose?</h3>
+    <p>UTF-8 for almost everything, especially English text and anything produced by a modern application. Pick ASCII when you want strict 7-bit output and an error for anything above 127, UTF-16 for dumps from older Windows tools, and GBK for Chinese text created before UTF-8 became standard.</p>
+
+    <h3>Why does the decoded text show question marks or boxes?</h3>
+    <p>The bytes were almost certainly produced with a different encoding. Decoding GBK bytes as UTF-8 yields the replacement character, and decoding UTF-16 as UTF-8 yields a string of unrelated symbols. Change the dropdown and convert again — the binary itself has not changed.</p>
+
+    <h3>Is there a limit to how much I can paste?</h3>
+    <p>The input accepts up to 100,000 characters, roughly 12,500 bytes of binary. Anything longer gets a message instead of a frozen tab, because the conversion runs on your device in a single pass.</p>
+
+    <h3>Does this binary code translator upload my data?</h3>
+    <p>No. The page is one static HTML file with inline JavaScript, and the conversion happens in your browser. There is no upload step, no account and no server-side processing, so pasting proprietary strings is no different from typing them into a text editor.</p>
+
+    <h3>Can it turn binary back into Chinese text?</h3>
+    <p>Yes, if the bytes were encoded with GBK or UTF-8. Choose the matching encoding, paste the binary, and the characters appear in the output box. Question marks in the result mean the selector is on the wrong setting.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>BinTextly — free browser-based converters for binary, text, hex and ASCII. <a href="../">Back to all converters</a>.</p>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I read binary code by hand?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Split the string into groups of eight bits, starting from the left. Each group is one byte, and its decimal value points to a character: 01001000 is 64 + 8, so 72, which is H in ASCII. The spaces between groups are only there to help you see the boundaries."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens to spaces, commas and line breaks in the input?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "They are ignored. Spaces, tabs, commas and line breaks are treated as separators and removed before decoding, so pasting a column of bytes from a debugger works the same as pasting one long string."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I convert binary code without spaces?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The input is read as a continuous bit stream and cut into bytes every eight bits, so 0100100001101001 decodes to Hi. If the total is not a multiple of eight, the leftover bits at the end are ignored and the status line tells you how many were dropped."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which encoding should I choose?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "UTF-8 for almost everything, especially English text and anything produced by a modern application. Pick ASCII when you want strict 7-bit output and an error for anything above 127, UTF-16 for dumps from older Windows tools, and GBK for Chinese text created before UTF-8 became standard."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does the decoded text show question marks or boxes?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The bytes were almost certainly produced with a different encoding. Decoding GBK bytes as UTF-8 yields the replacement character, and decoding UTF-16 as UTF-8 yields a string of unrelated symbols. Change the dropdown and convert again — the binary itself has not changed."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a limit to how much I can paste?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The input accepts up to 100,000 characters, roughly 12,500 bytes of binary. Anything longer gets a message instead of a frozen tab, because the conversion runs on your device in a single pass."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this binary code translator upload my data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The page is one static HTML file with inline JavaScript, and the conversion happens in your browser. There is no upload step, no account and no server-side processing, so pasting proprietary strings is no different from typing them into a text editor."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can it turn binary back into Chinese text?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, if the bytes were encoded with GBK or UTF-8. Choose the matching encoding, paste the binary, and the characters appear in the output box. Question marks in the result mean the selector is on the wrong setting."
+      }
+    }
+  ]
+}
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  var MAX = 100000;
+  var SEP = " \t\n\r\f\v\u00a0";
+  var mode = "decode";
+  var timer = null;
+
+  var el = {
+    input: document.getElementById("input"),
+    output: document.getElementById("output"),
+    enc: document.getElementById("encoding"),
+    status: document.getElementById("status"),
+    counter: document.getElementById("counter"),
+    labelInput: document.getElementById("label-input"),
+    labelOutput: document.getElementById("label-output"),
+    dirDecode: document.getElementById("dir-decode"),
+    dirEncode: document.getElementById("dir-encode"),
+    tbody: document.getElementById("table-body"),
+    tsearch: document.getElementById("table-search"),
+    tcount: document.getElementById("table-count")
+  };
+
+  function plural(n, one, many) {
+    return n + " " + (n === 1 ? one : many);
+  }
+
+  function setStatus(kind, message) {
+    el.status.className = "status" + (kind ? " status-" + kind : "");
+    el.status.textContent = message;
+  }
+
+  function encName() {
+    var v = el.enc.value;
+    if (v === "ascii") return "ASCII";
+    if (v === "utf16") return "UTF-16LE";
+    if (v === "gbk") return "GBK";
+    return "UTF-8";
+  }
+
+  // ---- binary cleaning and validation ----
+
+  function cleanBinary(raw) {
+    var bits = [];
+    var i = 0;
+    var n = raw.length;
+    while (i < n) {
+      var ch = raw.charAt(i);
+      if (SEP.indexOf(ch) !== -1 || ch === "," || ch === "\uFF0C") { i++; continue; }
+      if (ch === "0" && i + 2 < n &&
+          (raw.charAt(i + 1) === "b" || raw.charAt(i + 1) === "B") &&
+          (raw.charAt(i + 2) === "0" || raw.charAt(i + 2) === "1")) {
+        i += 2;
+        continue;
+      }
+      if (ch === "0" || ch === "1") { bits.push(ch); i++; continue; }
+      var from = Math.max(0, i - 14);
+      var to = Math.min(n, i + 15);
+      return {
+        error: {
+          pos: i + 1,
+          char: ch,
+          snippet: (from > 0 ? "…" : "") + raw.slice(from, to) + (to < n ? "…" : "")
+        }
+      };
+    }
+    return { bits: bits.join("") };
+  }
+
+  // ---- byte to text ----
+
+  function bytesToText(bytes, enc) {
+    if (enc === "ascii") {
+      var out = "";
+      var bad = 0;
+      for (var i = 0; i < bytes.length; i++) {
+        if (bytes[i] < 128) {
+          out += String.fromCharCode(bytes[i]);
+        } else {
+          out += "\uFFFD";
+          bad++;
+        }
+      }
+      return {
+        text: out,
+        warning: bad ? plural(bad, "byte is", "bytes are") + " above 127 and outside ASCII; switch to UTF-8 to read them." : ""
+      };
+    }
+    var label = enc === "utf16" ? "utf-16le" : (enc === "gbk" ? "gbk" : "utf-8");
+    var text;
+    try {
+      text = new TextDecoder(label).decode(bytes);
+    } catch (e) {
+      return { error: "This browser cannot decode " + encName() + ". Try UTF-8 instead." };
+    }
+    var replacements = text.split("\uFFFD").length - 1;
+    return {
+      text: text,
+      warning: replacements ? plural(replacements, "sequence does", "sequences do") + " not match valid " + encName() + " and show \uFFFD." : ""
+    };
+  }
+
+  function decodeBinary(raw) {
+    var cleaned = cleanBinary(raw);
+    if (cleaned.error) {
+      var e = cleaned.error;
+      return {
+        error: "Character " + e.pos + " is \u201C" + e.char + "\u201D, which is not a binary digit. Only 0 and 1 are allowed, plus spaces, commas, tabs and line breaks as separators. Near: " + e.snippet
+      };
+    }
+    var bits = cleaned.bits;
+    if (!bits.length) return { empty: true };
+    var whole = Math.floor(bits.length / 8);
+    var rest = bits.length % 8;
+    if (!whole) {
+      return { error: "That is only " + plural(bits.length, "bit", "bits") + ". One character needs a full byte of 8 bits, for example 01001000 for H." };
+    }
+    var bytes = new Uint8Array(whole);
+    for (var k = 0; k < whole; k++) {
+      bytes[k] = parseInt(bits.substr(k * 8, 8), 2);
+    }
+    var res = bytesToText(bytes, el.enc.value);
+    if (res.error) return res;
+    var warnings = [];
+    if (rest) warnings.push(plural(rest, "leftover bit was", "leftover bits were") + " ignored at the end, because a byte is 8 bits.");
+    if (res.warning) warnings.push(res.warning);
+    return { text: res.text, bytes: whole, bits: bits.length, warnings: warnings };
+  }
+
+  // ---- text to bytes ----
+
+  var gbkTable = null;
+
+  function getGbkTable() {
+    if (gbkTable) return gbkTable;
+    var buf = [];
+    var l, t;
+    for (l = 0x81; l <= 0xfe; l++) {
+      for (t = 0x40; t <= 0xfe; t++) {
+        if (t === 0x7f) continue;
+        buf.push(l, t, 0x0a);
+      }
+    }
+    var decoded;
+    try {
+      decoded = new TextDecoder("gbk").decode(new Uint8Array(buf));
+    } catch (e) {
+      return null;
+    }
+    var parts = decoded.split("\n");
+    var map = Object.create(null);
+    var idx = 0;
+    for (l = 0x81; l <= 0xfe; l++) {
+      for (t = 0x40; t <= 0xfe; t++) {
+        if (t === 0x7f) continue;
+        var ch = parts[idx++];
+        if (ch && ch !== "\uFFFD" && ch.length === 1 && map[ch] === undefined) {
+          map[ch] = (l << 8) | t;
+        }
+      }
+    }
+    gbkTable = map;
+    return map;
+  }
+
+  function gbkEncode(text) {
+    var map = getGbkTable();
+    if (!map) {
+      return { error: "This browser does not expose a GBK table, so encoding to GBK is unavailable here. UTF-8 works everywhere." };
+    }
+    var out = [];
+    for (var i = 0; i < text.length; i++) {
+      var code = text.charCodeAt(i);
+      if (code < 128) { out.push(code); continue; }
+      var ch = text.charAt(i);
+      if (code >= 0xd800 && code <= 0xdbff && i + 1 < text.length) {
+        ch = text.substr(i, 2);
+        i++;
+      }
+      var pair = map[ch];
+      if (pair === undefined) {
+        if (ch === "\u20AC") { out.push(0x80); continue; }
+        return { error: "Character " + (i + 1) + " (\u201C" + ch + "\u201D) has no GBK code point. Switch to UTF-8 to keep it." };
+      }
+      out.push((pair >> 8) & 0xff, pair & 0xff);
+    }
+    return { bytes: new Uint8Array(out) };
+  }
+
+  function encodeText(text) {
+    var enc = el.enc.value;
+    var i, bytes;
+    if (enc === "ascii") {
+      bytes = new Uint8Array(text.length);
+      for (i = 0; i < text.length; i++) {
+        var c = text.charCodeAt(i);
+        if (c > 127) {
+          return { error: "Character " + (i + 1) + " (\u201C" + text.charAt(i) + "\u201D) is outside ASCII, which stops at 127. Use UTF-8 to encode it, or remove it." };
+        }
+        bytes[i] = c;
+      }
+      return { bytes: bytes };
+    }
+    if (enc === "utf16") {
+      bytes = new Uint8Array(text.length * 2);
+      for (i = 0; i < text.length; i++) {
+        var u = text.charCodeAt(i);
+        bytes[i * 2] = u & 0xff;
+        bytes[i * 2 + 1] = (u >> 8) & 0xff;
+      }
+      return { bytes: bytes };
+    }
+    if (enc === "gbk") return gbkEncode(text);
+    try {
+      return { bytes: new TextEncoder().encode(text) };
+    } catch (e) {
+      return { error: "This browser cannot encode UTF-8." };
+    }
+  }
+
+  function bytesToBinary(bytes) {
+    var parts = [];
+    for (var i = 0; i < bytes.length; i++) {
+      var s = bytes[i].toString(2);
+      parts.push("00000000".slice(s.length) + s);
+    }
+    return parts.join(" ");
+  }
+
+  // ---- ui ----
+
+  function updateCounter() {
+    var n = el.input.value.length;
+    el.counter.textContent = n.toLocaleString("en-US") + " of 100,000 characters";
+  }
+
+  function convert(manual) {
+    clearTimeout(timer);
+    var raw = el.input.value;
+
+    if (raw.length > MAX) {
+      el.output.value = "";
+      setStatus("error", "That is " + raw.length.toLocaleString("en-US") + " characters, over the 100,000 limit. Shorten the input and conversion resumes on its own — nothing was uploaded.");
+      return;
+    }
+    if (!raw.replace(/\s/g, "")) {
+      el.output.value = "";
+      if (manual) {
+        setStatus("warn", "Nothing to convert yet. Paste binary code or type some text first.");
+      } else {
+        setStatus("", "Paste binary code or type text. The result appears here as you type.");
+      }
+      return;
+    }
+
+    if (mode === "decode") {
+      var res = decodeBinary(raw);
+      if (res.error) {
+        el.output.value = "";
+        setStatus("error", res.error);
+        return;
+      }
+      el.output.value = res.text;
+      var msg = "Decoded " + plural(res.bytes, "byte", "bytes") + " (" + plural(res.bits, "bit", "bits") + ") into " + plural(Array.from(res.text).length, "character", "characters") + " using " + encName() + ".";
+      setStatus(res.warnings.length ? "warn" : "ok", msg + (res.warnings.length ? " " + res.warnings.join(" ") : ""));
+    } else {
+      var enc = encodeText(raw);
+      if (enc.error) {
+        el.output.value = "";
+        setStatus("error", enc.error);
+        return;
+      }
+      var bin = bytesToBinary(enc.bytes);
+      el.output.value = bin;
+      setStatus("ok", "Encoded " + plural(Array.from(raw).length, "character", "characters") + " into " + plural(enc.bytes.length, "byte", "bytes") + " as " + encName() + ".");
+    }
+  }
+
+  function schedule() {
+    clearTimeout(timer);
+    timer = setTimeout(function () { convert(false); }, 150);
+  }
+
+  function setMode(next) {
+    mode = next;
+    var decode = next === "decode";
+    el.dirDecode.checked = decode;
+    el.dirEncode.checked = !decode;
+    el.labelInput.textContent = decode ? "Binary code input" : "Text input";
+    el.labelOutput.textContent = decode ? "Decoded text" : "Binary output";
+    el.input.placeholder = decode
+      ? "01001000 01100101 01101100 01101100 01101111"
+      : "Type or paste text here, for example: Hello";
+  }
+
+  function copyText(value) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(value).then(function () { return true; }, function () { return legacyCopy(value); });
+    }
+    return Promise.resolve(legacyCopy(value));
+  }
+
+  function legacyCopy(value) {
+    var area = document.createElement("textarea");
+    area.value = value;
+    area.setAttribute("readonly", "readonly");
+    area.style.position = "fixed";
+    area.style.left = "-9999px";
+    document.body.appendChild(area);
+    area.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(area);
+    return ok;
+  }
+
+  el.input.addEventListener("input", function () {
+    updateCounter();
+    schedule();
+  });
+
+  el.dirDecode.addEventListener("change", function () {
+    setMode("decode");
+    if (el.input.value.trim()) convert(true);
+  });
+
+  el.dirEncode.addEventListener("change", function () {
+    setMode("encode");
+    if (el.input.value.trim()) convert(true);
+  });
+
+  el.enc.addEventListener("change", function () {
+    if (el.input.value.trim()) convert(true);
+  });
+
+  document.getElementById("btn-convert").addEventListener("click", function () { convert(true); });
+
+  document.getElementById("btn-swap").addEventListener("click", function () {
+    var out = el.output.value;
+    if (!out) {
+      setStatus("warn", "There is no result to swap yet. Convert something first.");
+      return;
+    }
+    el.input.value = out;
+    setMode(mode === "decode" ? "encode" : "decode");
+    updateCounter();
+    convert(true);
+    el.input.focus();
+  });
+
+  document.getElementById("btn-copy").addEventListener("click", function () {
+    var out = el.output.value;
+    if (!out) {
+      setStatus("warn", "Nothing to copy yet. Convert something first.");
+      return;
+    }
+    copyText(out).then(function (ok) {
+      if (ok) {
+        setStatus("ok", "Copied " + plural(out.length, "character", "characters") + " to the clipboard.");
+      } else {
+        setStatus("error", "The browser blocked clipboard access. Select the output box and copy it manually.");
+      }
+    });
+  });
+
+  document.getElementById("btn-clear").addEventListener("click", function () {
+    el.input.value = "";
+    el.output.value = "";
+    updateCounter();
+    setStatus("", "Cleared. Paste binary code or type text to start again.");
+    el.input.focus();
+  });
+
+  document.getElementById("btn-example").addEventListener("click", function () {
+    el.input.value = mode === "decode"
+      ? "01001000 01100101 01101100 01101100 01101111 00101100 00100000 01100010 01101001 01101110 01100001 01110010 01111001 00100001"
+      : "Hello, binary!";
+    updateCounter();
+    convert(true);
+    el.input.focus();
+  });
+
+  // ---- reference table ----
+
+  function rowText(row) {
+    var cells = row.cells;
+    return (cells[0].textContent + " " + cells[1].textContent + " " + cells[2].textContent + " " + cells[3].textContent).toLowerCase();
+  }
+
+  el.tsearch.addEventListener("input", function () {
+    var q = this.value.trim().toLowerCase();
+    var rows = el.tbody.rows;
+    var shown = 0;
+    for (var i = 0; i < rows.length; i++) {
+      var hit = !q || rowText(rows[i]).indexOf(q) !== -1;
+      rows[i].hidden = !hit;
+      if (hit) shown++;
+    }
+    el.tcount.textContent = q
+      ? shown + " of " + rows.length + " characters match \u201C" + this.value.trim() + "\u201D"
+      : rows.length + " characters";
+  });
+
+  el.tbody.addEventListener("click", function (event) {
+    var btn = event.target.closest ? event.target.closest("button[data-bin]") : null;
+    if (!btn) return;
+    copyText(btn.getAttribute("data-bin")).then(function (ok) {
+      if (ok) {
+        setStatus("ok", "Copied " + btn.getAttribute("data-bin") + " (" + btn.getAttribute("data-char") + ") to the clipboard.");
+      } else {
+        setStatus("error", "The browser blocked clipboard access. Select the binary value and copy it manually.");
+      }
+    });
+  });
+
+  document.getElementById("table-copy").addEventListener("click", function () {
+    var rows = el.tbody.rows;
+    var lines = ["Char\tBinary\tDecimal\tHex"];
+    for (var i = 0; i < rows.length; i++) {
+      if (rows[i].hidden) continue;
+      var c = rows[i].cells;
+      lines.push(c[0].textContent + "\t" + c[1].textContent + "\t" + c[2].textContent + "\t" + c[3].textContent);
+    }
+    copyText(lines.join("\n")).then(function (ok) {
+      setStatus(ok ? "ok" : "error", ok
+        ? "Copied " + (lines.length - 1) + " table rows as tab-separated text."
+        : "The browser blocked clipboard access. Select the table and copy it manually.");
+    });
+  });
+
+  setMode("decode");
+  updateCounter();
+})();
+</script>
+</body>
+</html>
