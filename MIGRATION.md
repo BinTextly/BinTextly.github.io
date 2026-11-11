@@ -43,3 +43,26 @@ python3 build.py --check   # 只读校验，有问题退出码 1
 ## 不对外发布的文件
 
 `.assetsignore` 把构建脚本、配置、文档、`tools/` 排除在 Workers 静态资源之外，仓库里保留、线上不可访问。
+
+## 404 页面
+
+`404.html` 在仓库根部，带 `noindex`、不带 canonical，大小约 2.3 KB。但文件存在不等于会被使用：Workers 静态资源默认的 `not_found_handling` 是 `none`，未匹配路径返回 **404 + 空响应体**，而 `/404.html` 本身会被 307 到 `/404`。
+
+要让任意无效路径返回这张页面，需把未匹配路径处理设为 `404-page`：
+
+```jsonc
+// wrangler.jsonc
+{
+  "name": "<Worker 名，必须与现有 Worker 一致>",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": ".",
+    "not_found_handling": "404-page"
+  }
+}
+```
+
+或在 Cloudflare 控制台：Workers → 该项目 → Settings → 静态资源/Build → Not found handling → 选 `404 page`。
+
+注意：本仓库目前没有 wrangler 配置文件，部署参数在控制台侧，所以新增配置文件时 `name` 必须与线上 Worker 同名，否则会部署出一个新的 Worker，自定义域名不会跟过去。
+

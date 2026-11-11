@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Binary Code Translator - Convert Binary to Text and Back</title>
 <meta name="description" content="Free binary code translator: turn binary code into readable text, and any English text back into binary. Handles spaces, line breaks, 0b prefixes, UTF-8.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BinTextly">
+<meta property="og:title" content="Binary Code Translator - Convert Binary to Text and Back">
+<meta property="og:description" content="Free binary code translator: turn binary code into readable text, and any English text back into binary. Handles spaces, line breaks, 0b prefixes, UTF-8.">
+<meta property="og:url" content="https://bintextly.com/binary-code-translator/">
+<meta property="og:image" content="https://bintextly.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b47c4'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='13' font-weight='bold' fill='%23ffffff' text-anchor='middle'%3E0b%3C/text%3E%3C/svg%3E">
 <link rel="canonical" href="https://bintextly.com/binary-code-translator/">
 <style>
@@ -78,6 +85,8 @@ table.ref .mini:focus-visible{outline:3px solid var(--accent);outline-offset:1px
 .faq p{margin-bottom:0}
 footer{border-top:1px solid var(--line);margin-top:40px;padding:18px 0 32px;font-size:.875rem;color:var(--muted)}
 footer p{margin:0}
+.foot-nav{display:flex;flex-wrap:wrap;gap:4px 16px;margin:0 0 6px}
+.foot-nav a{font-weight:400}
 @media(max-width:520px){table.ref .hide-sm{display:none}}
 </style>
 </head>
@@ -284,7 +293,7 @@ footer p{margin:0}
   <p class="hint">Control characters such as tab (<code>00001001</code>) and line feed (<code>00001010</code>) are left out because they do not render, but they decode normally if they appear in your input.</p>
 
   <section aria-labelledby="related-title">
-  <p class="sec-label" id="related-title">Related converters</p>
+  <h2 class="sec-label" id="related-title">Related converters</h2>
   <p>If you only need one direction, a dedicated page is usually faster than switching modes here.</p>
   <ul class="related">
     <li><a href="/binary-to-english/">Read binary code as English text</a><span>Paste a string of bytes and get the plain-language output, with a step-by-step reading guide.</span></li>
@@ -292,7 +301,7 @@ footer p{margin:0}
   </section>
 
   <section class="faq" aria-labelledby="faq-title">
-  <p class="sec-label" id="faq-title">Frequently asked questions</p>
+  <h2 class="sec-label" id="faq-title">Frequently asked questions</h2>
     <h3>How do I read binary code by hand?</h3>
     <p>Split the string into groups of eight bits, starting from the left. Each group is one byte, and its decimal value points to a character: 01001000 is 64 + 8, so 72, which is H in ASCII. The spaces between groups are only there to help you see the boundaries.</p>
 
@@ -318,7 +327,8 @@ footer p{margin:0}
 
 <footer>
   <div class="wrap">
-    <p>BinTextly — free browser-based converters for binary, text, hex and ASCII. <a href="/">Back to all converters</a>.</p>
+    <p class="foot-nav"><a href="/">BinTextly home</a><a href="/binary-to-english/">Binary to English translator</a></p>
+    <p>BinTextly — free browser-based converters for binary, text, hex and ASCII.</p>
   </div>
 </footer>
 

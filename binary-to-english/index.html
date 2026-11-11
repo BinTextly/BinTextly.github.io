@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Binary to English Translator - Convert Binary Code to Text</title>
 <meta name="description" content="Convert binary code to English text instantly. Paste 01001000 01101001 and get readable text, with ASCII and UTF-8 support plus a step-by-step guide.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BinTextly">
+<meta property="og:title" content="Binary to English Translator - Convert Binary Code to Text">
+<meta property="og:description" content="Convert binary code to English text instantly. Paste 01001000 01101001 and get readable text, with ASCII and UTF-8 support plus a step-by-step guide.">
+<meta property="og:url" content="https://bintextly.com/binary-to-english/">
+<meta property="og:image" content="https://bintextly.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b47c4'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='13' font-weight='bold' fill='%23ffffff' text-anchor='middle'%3E0b%3C/text%3E%3C/svg%3E">
 <link rel="canonical" href="https://bintextly.com/binary-to-english/">
 <style>
@@ -75,6 +82,8 @@ td.ch{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weig
 footer{border-top:1px solid var(--line);margin-top:36px;padding:20px 0 32px;font-size:.875rem;color:var(--muted)}
 footer p{margin:0 0 6px}
 footer a{font-weight:600}
+.foot-nav{display:flex;flex-wrap:wrap;gap:4px 16px}
+.foot-nav a{font-weight:400}
 </style>
 </head>
 <body>
@@ -280,26 +289,22 @@ footer a{font-weight:600}
 </section>
 
 <section aria-labelledby="related-title">
-  <p class="sec-label" id="related-title">Related converters</p>
+  <h2 class="sec-label" id="related-title">Related converters</h2>
   <ul class="links">
     <li><a href="/binary-code-translator/">binary code translator</a><p>The same four character encodings and the same error messages, in one dedicated page.</p></li>
   </ul>
 </section>
 
 <section class="faq" aria-labelledby="faq-title">
-  <p class="sec-label" id="faq-title">Frequently asked questions</p>
-  <h3>How do I read binary code as English text?</h3>
-  <p>Group the bits into eight-bit bytes, convert each byte to its decimal value, then look that value up in the ASCII table. 01001000 is 72, which is a capital H. This binary to English translator does the grouping and the lookup for you, so you can paste a paragraph instead of reading it byte by byte.</p>
+  <h2 class="sec-label" id="faq-title">Frequently asked questions</h2>
   <h3>What does 01001000 01101001 mean?</h3>
   <p>Those two bytes spell Hi. 01001000 is decimal 72 and 01101001 is decimal 105. Paste the same string into the converter above and you should get those two letters back.</p>
-  <h3>Can I paste binary without spaces?</h3>
-  <p>Yes. Spaces, tabs, commas and line breaks are ignored, and any 0b prefix is removed, so 0100100001101001 and 0b01001000 0b01101001 decode to the same text. A continuous run of digits is grouped from the left, eight bits at a time.</p>
-  <h3>Why does the output look like random symbols?</h3>
-  <p>The bits are probably not in the encoding you selected. Plain English is usually ASCII or UTF-8, but text exported from Windows tools may be UTF-16, and older Chinese documents are often GBK. Change the dropdown and convert again; if replacement characters remain, those bytes do not form valid text in any of those encodings.</p>
-  <h3>Is my binary sent to a server?</h3>
-  <p>No. The conversion runs in JavaScript on your device, and the page makes no network request after it loads. You can switch off your connection and keep using the binary to English translator.</p>
-  <h3>How much binary can I convert at once?</h3>
-  <p>The input box takes up to 100,000 characters, which is about 12,500 bytes of decoded text. Longer input stops with a message instead of freezing the tab.</p>
+  <h3>Does this tool translate binary into English words, or into letters?</h3>
+  <p>It rebuilds characters, not meanings. Every eight bits are read as one byte and matched against the character table, so 01001000 01101001 comes out as the two letters Hi. No word is looked up, substituted or guessed from context.</p>
+  <h3>Why does 01001000 sometimes appear as 72?</h3>
+  <p>Those are the same byte written two ways. 01001000 is 72 in decimal, and in ASCII the value 72 points at the character H — which is why one tool prints bits, another prints 72, and this page prints H. The chart above lists all three forms side by side.</p>
+  <h3>What does 01000001 mean?</h3>
+  <p>It is 64 + 1 = 65, and ASCII 65 is a capital A. The same arithmetic runs across the uppercase range, which starts at 65 (A) and ends at 90 (Z). Lowercase letters sit further along, from 97 (a) to 122 (z).</p>
 </section>
 
 <script type="application/ld+json">
@@ -307,14 +312,6 @@ footer a{font-weight:600}
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "How do I read binary code as English text?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Group the bits into eight-bit bytes, convert each byte to its decimal value, then look that value up in the ASCII table. 01001000 is 72, which is a capital H. This binary to English translator does the grouping and the lookup for you, so you can paste a paragraph instead of reading it byte by byte."
-      }
-    },
     {
       "@type": "Question",
       "name": "What does 01001000 01101001 mean?",
@@ -325,34 +322,26 @@ footer a{font-weight:600}
     },
     {
       "@type": "Question",
-      "name": "Can I paste binary without spaces?",
+      "name": "Does this tool translate binary into English words, or into letters?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. Spaces, tabs, commas and line breaks are ignored, and any 0b prefix is removed, so 0100100001101001 and 0b01001000 0b01101001 decode to the same text. A continuous run of digits is grouped from the left, eight bits at a time."
+        "text": "It rebuilds characters, not meanings. Every eight bits are read as one byte and matched against the character table, so 01001000 01101001 comes out as the two letters Hi. No word is looked up, substituted or guessed from context."
       }
     },
     {
       "@type": "Question",
-      "name": "Why does the output look like random symbols?",
+      "name": "Why does 01001000 sometimes appear as 72?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The bits are probably not in the encoding you selected. Plain English is usually ASCII or UTF-8, but text exported from Windows tools may be UTF-16, and older Chinese documents are often GBK. Change the dropdown and convert again; if replacement characters remain, those bytes do not form valid text in any of those encodings."
+        "text": "Those are the same byte written two ways. 01001000 is 72 in decimal, and in ASCII the value 72 points at the character H — which is why one tool prints bits, another prints 72, and this page prints H. The chart above lists all three forms side by side."
       }
     },
     {
       "@type": "Question",
-      "name": "Is my binary sent to a server?",
+      "name": "What does 01000001 mean?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No. The conversion runs in JavaScript on your device, and the page makes no network request after it loads. You can switch off your connection and keep using the binary to English translator."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How much binary can I convert at once?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "The input box takes up to 100,000 characters, which is about 12,500 bytes of decoded text. Longer input stops with a message instead of freezing the tab."
+        "text": "It is 64 + 1 = 65, and ASCII 65 is a capital A. The same arithmetic runs across the uppercase range, which starts at 65 (A) and ends at 90 (Z). Lowercase letters sit further along, from 97 (a) to 122 (z)."
       }
     }
   ]
@@ -363,7 +352,7 @@ footer a{font-weight:600}
 
 <footer>
   <div class="wrap">
-    <p><a href="/">BinTextly home</a></p>
+    <p class="foot-nav"><a href="/">BinTextly home</a><a href="/binary-code-translator/">Binary code translator</a></p>
     <p>Free browser-based converters for binary, text, hex and ASCII. No sign-up, no uploads — every conversion runs on your own device.</p>
   </div>
 </footer>
