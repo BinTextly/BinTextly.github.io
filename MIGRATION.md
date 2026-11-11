@@ -64,5 +64,5 @@ python3 build.py --check   # 只读校验，有问题退出码 1
 
 或在 Cloudflare 控制台：Workers → 该项目 → Settings → 静态资源/Build → Not found handling → 选 `404 page`。
 
-注意：本仓库目前没有 wrangler 配置文件，部署参数在控制台侧，所以新增配置文件时 `name` 必须与线上 Worker 同名，否则会部署出一个新的 Worker，自定义域名不会跟过去。
+仓库根的 `wrangler.jsonc` 已写入上述配置：`name` 为 `bintextly`，`directory` 指仓库根（本站无构建产物），`not_found_handling` 为 `404-page`。改动该文件等同改线上行为；若 `name` 与线上 Worker 不一致，会部署到另一个 Worker，自定义域名不会跟过去。
 

@@ -1,6 +1,7 @@
 # Kept in the repository, excluded from the published static assets.
 build.py
 site.config.js
+wrangler.jsonc
 MIGRATION.md
 tools/
 .gitignore

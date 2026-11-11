@@ -1,0 +1,10 @@
+{
+  // Deployed by Cloudflare Workers Builds from this repository.
+  // The site has no build step: the repository root is the asset directory.
+  "name": "bintextly",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": ".",
+    "not_found_handling": "404-page"
+  }
+}
