@@ -149,13 +149,10 @@ footer a{font-weight:600}
   </ol>
 
   <h3>How binary code works</h3>
-  <p>A bit is one 0 or 1. Eight bits make a byte, and in ASCII a byte holds exactly one character. Each position in the byte has a fixed weight — 128, 64, 32, 16, 8, 4, 2, 1, reading left to right. Add the weights wherever a 1 appears and you have the code point of that character. This is the whole trick; everything else is bookkeeping.</p>
+  <p>A bit is one 0 or 1, eight bits make a byte, and in ASCII one byte is exactly one character.</p>
+  <p>Each position in a byte carries a fixed weight — 128, 64, 32, 16, 8, 4, 2, 1 — so adding the weights wherever a 1 appears gives that character's code point.</p>
   <p class="example"><code>01001000 01100101 01101100 01101100 01101111</code> = <strong>Hello</strong></p>
-  <p>The first byte has 1s in the 64 and 8 positions, so 64 + 8 = 72, which is a capital H. The remaining bytes evaluate to 101, 108, 108 and 111, spelling <em>ello</em>. Change one bit and the letter changes with it: <code>01001001</code> is 73, a capital I, and <code>01101000</code> is 104, a lowercase h.</p>
-  <p>Grouping has to start from the left and stay constant for the same reason. Delete one bit from the middle of a stream and every byte after it shifts by one position, so the rest of the message turns into noise. When the total is not a multiple of eight, the converter decodes the complete bytes and tells you how many bits were left over, rather than padding them into a character that was never sent.</p>
-  <p>ASCII ends at 127. Bytes above that point mean different things in different encodings: in UTF-8 they open a multi-byte sequence, in GBK they pair with the next byte, in UTF-16 they form half of a 16-bit unit. That is why a stream can be perfectly valid and still decode to gibberish — the bits are right, the assumption about encoding is wrong. Try the dropdown before you assume the paste was corrupted.</p>
-  <p>UTF-8 matches ASCII for the first 128 code points, so plain English text produces identical bytes in both. The difference only appears with accented letters, typographic quotes, currency symbols and non-Latin scripts, each of which costs two to four bytes. It is also why the length of a binary string does not equal the number of characters it represents.</p>
-  <p>Read a few of these by hand and the pattern stops being opaque; until then, the binary to English translator above is faster than counting 64s and 8s on paper.</p>
+  <p>The first byte has 1s in the 64 and 8 positions, so 64 + 8 = 72, a capital H; the remaining bytes are 101, 108, 108 and 111.</p>
 </section>
 
 <section aria-labelledby="chart-title">
@@ -285,7 +282,7 @@ footer a{font-weight:600}
 <section aria-labelledby="related-title">
   <p class="sec-label" id="related-title">Related converters</p>
   <ul class="links">
-    <li><a href="/binary-code-translator/">binary code translator</a><p>Decode binary to text or encode it back, with ASCII, UTF-8, UTF-16 and GBK support.</p></li>
+    <li><a href="/binary-code-translator/">binary code translator</a><p>The same four character encodings and the same error messages, in one dedicated page.</p></li>
   </ul>
 </section>
 
@@ -303,10 +300,6 @@ footer a{font-weight:600}
   <p>No. The conversion runs in JavaScript on your device, and the page makes no network request after it loads. You can switch off your connection and keep using the binary to English translator.</p>
   <h3>How much binary can I convert at once?</h3>
   <p>The input box takes up to 100,000 characters, which is about 12,500 bytes of decoded text. Longer input stops with a message instead of freezing the tab.</p>
-  <h3>What is the difference between ASCII and UTF-8 here?</h3>
-  <p>For the printable English characters in the chart they produce identical bytes, one per character. UTF-8 only diverges when the text contains accented letters, symbols or non-Latin scripts, which take two to four bytes each.</p>
-  <h3>Can I convert English text back into binary?</h3>
-  <p>Yes. Use Swap or the direction toggle to switch to English to binary, type a sentence, and the converter returns eight-bit groups separated by spaces. UTF-8 is the safe choice for anything that is not plain English.</p>
 </section>
 
 <script type="application/ld+json">
@@ -360,22 +353,6 @@ footer a{font-weight:600}
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "The input box takes up to 100,000 characters, which is about 12,500 bytes of decoded text. Longer input stops with a message instead of freezing the tab."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What is the difference between ASCII and UTF-8 here?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "For the printable English characters in the chart they produce identical bytes, one per character. UTF-8 only diverges when the text contains accented letters, symbols or non-Latin scripts, which take two to four bytes each."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can I convert English text back into binary?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. Use Swap or the direction toggle to switch to English to binary, type a sentence, and the converter returns eight-bit groups separated by spaces. UTF-8 is the safe choice for anything that is not plain English."
       }
     }
   ]
