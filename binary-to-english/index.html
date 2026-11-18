@@ -162,6 +162,15 @@ footer a{font-weight:600}
   <p>Each position in a byte carries a fixed weight — 128, 64, 32, 16, 8, 4, 2, 1 — so adding the weights wherever a 1 appears gives that character's code point.</p>
   <p class="example"><code>01001000 01100101 01101100 01101100 01101111</code> = <strong>Hello</strong></p>
   <p>The first byte has 1s in the 64 and 8 positions, so 64 + 8 = 72, a capital H; the remaining bytes are 101, 108, 108 and 111.</p>
+
+  <h3>When one character takes more than one byte</h3>
+  <p>Eight-bit chunks feel safe because ASCII works that way, one byte per character. UTF-8 does not keep that promise. A grinning-face emoji is four bytes, ñ is two, and the first byte of a multi-byte character carries its own length: <code>110xxxxx</code> says one continuation byte follows, <code>11110xxx</code> says three. Cut a stream mid-character, or lose a byte in the middle of a copy, and the decoder gets a lead byte whose continuations are missing. Nothing can repair that. Those bytes come out as <code>&#65533;</code>, and the status line reports that part of the stream is not valid UTF-8. Paste the whole run, or set the encoding to whatever the source actually used.</p>
+</section>
+
+<section aria-labelledby="same-title">
+  <h2 id="same-title">Binary to English vs Binary Translator: are they the same thing?</h2>
+  <p>Yes. The wording varies — binary translator to English, translate binary code to English, binary code to English, translate from binary to English — but every one of them asks for the same operation: read a run of 0s and 1s as bytes, then print the characters those bytes encode. Binary language translator is another label for it. Nothing is translated in the linguistic sense: no dictionary is opened and no word is inferred from context.</p>
+  <p>One label is looser. Binary to code often means recovering source from a compiled program, which is decompilation and needs the instruction set of the CPU the program was built for. This page has no instruction table. It maps bytes to characters and stops there, so a compiled file put through it gives noisy characters rather than readable code.</p>
 </section>
 
 <section aria-labelledby="chart-title">
@@ -288,10 +297,42 @@ footer a{font-weight:600}
   <p>Two things the chart does not cover. Control characters — tab, line feed, carriage return — have no visible form, and they reach decoded text as a line break or as nothing at all. And anything past ASCII is multi-byte: a lowercase e with an acute accent is <code>11000011 10101001</code> in UTF-8, two bytes for one character, even though it is the single value 233 in Latin-1.</p>
 </section>
 
+<style>
+#paste-table td,#paste-table th{white-space:normal;vertical-align:top}
+#paste-table td:nth-child(2){font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.8125rem}
+</style>
+
+<section aria-labelledby="paste-title">
+  <h2 id="paste-title">What people actually paste into a binary translator</h2>
+  <p>A handful of shapes turn up, and they are not equally clean. The table below shows what happens to each one. The rule behind every row: separators are thrown away before decoding, so where the spaces fall has no effect on the output.</p>
+
+  <div class="table-wrap">
+    <table id="paste-table">
+      <caption>Common paste shapes and whether this page reads them without help.</caption>
+      <thead>
+        <tr><th scope="col">Shape</th><th scope="col">Example</th><th scope="col">Read without help?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Eight bits, space between bytes</td><td>01001000 01101001</td><td>Yes — spaces are dropped, then the bits are regrouped eight at a time.</td></tr>
+        <tr><td>One unbroken run</td><td>0100100001101001</td><td>Yes — grouped from the left, eight bits per byte.</td></tr>
+        <tr><td><code>0b</code> in front of each byte</td><td>0b01001000 0b01101001</td><td>Yes — the prefix is stripped before grouping.</td></tr>
+        <tr><td>Comma-separated bytes</td><td>01001000,01101001</td><td>Yes — commas are skipped like spaces.</td></tr>
+        <tr><td>Sixteen bits per group</td><td>0000000001001000 0000000001101001</td><td>Only with UTF-16 selected. Read as UTF-8 instead, the same bits put a NUL between every letter.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Two more things worth knowing. A trailing group that does not fill a full byte is dropped, and the status line says how many bits were left over. A character that is neither 0 nor 1 — a hex letter, a quote left in from a spreadsheet, a stray word — stops the scan, and the message points at its position instead of returning half a result.</p>
+
+  <h3>Where these pastes come from: a debugger, a serial log, a capture file</h3>
+  <p>A debugger asked to print a value in binary puts a <code>0b</code> in front of each one and breaks the line between values. A serial console logs whatever the device sends, so a paste can start mid-word and carries a line break wherever the firmware printed one. A protocol analyzer showing flag bits gives single bits with nothing marking a byte boundary. None of that changes the decode: separators are dropped, the remaining bits are regrouped from the left, and the result follows the bytes rather than the line breaks.</p>
+</section>
+
 <section aria-labelledby="related-title">
   <h2 class="sec-label" id="related-title">Related converters</h2>
   <ul class="links">
     <li><a href="/binary-code-translator/">binary code translator</a><p>The same four character encodings and the same error messages, in one dedicated page.</p></li>
+    <li><a href="/">binary and text converters</a><p>The site index — both tools on this site, each with a one-line summary of what it does.</p></li>
   </ul>
 </section>
 
@@ -305,6 +346,12 @@ footer a{font-weight:600}
   <p>Those are the same byte written two ways. 01001000 is 72 in decimal, and in ASCII the value 72 points at the character H — which is why one tool prints bits, another prints 72, and this page prints H. The chart above lists all three forms side by side.</p>
   <h3>What does 01000001 mean?</h3>
   <p>It is 64 + 1 = 65, and ASCII 65 is a capital A. The same arithmetic runs across the uppercase range, which starts at 65 (A) and ends at 90 (Z). Lowercase letters sit further along, from 97 (a) to 122 (z).</p>
+  <h3>Does a binary translator to English accept Base64 or hex?</h3>
+  <p>No. Base64 uses 64 symbols and hex uses 16; this scanner takes only 0 and 1, plus separators like spaces and commas. The first character outside that set stops the scan and the status line names its position, so a wrong paste is easy to trace.</p>
+  <h3>Can I translate from binary to English in bulk?</h3>
+  <p>Up to 100,000 characters of input per paste. Written with a space between bytes, that is about 11,000 bytes, so roughly 11,000 plain ASCII characters. Longer streams need splitting, and the split has to land on a byte boundary — cutting through a UTF-8 character breaks it.</p>
+  <h3>Does a binary language translator work with non-English text?</h3>
+  <p>It decodes it. UTF-8 covers any script the browser can render, so the output can come back as Chinese, Arabic or Cyrillic; GBK is the fallback for Chinese text out of Windows tools. The page converts bytes to characters and never between languages — if the result looks like garbage, the encoding selector is the thing to check.</p>
 </section>
 
 <script type="application/ld+json">
@@ -342,6 +389,30 @@ footer a{font-weight:600}
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "It is 64 + 1 = 65, and ASCII 65 is a capital A. The same arithmetic runs across the uppercase range, which starts at 65 (A) and ends at 90 (Z). Lowercase letters sit further along, from 97 (a) to 122 (z)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does a binary translator to English accept Base64 or hex?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Base64 uses 64 symbols and hex uses 16; this scanner takes only 0 and 1, plus separators like spaces and commas. The first character outside that set stops the scan and the status line names its position, so a wrong paste is easy to trace."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I translate from binary to English in bulk?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Up to 100,000 characters of input per paste. Written with a space between bytes, that is about 11,000 bytes, so roughly 11,000 plain ASCII characters. Longer streams need splitting, and the split has to land on a byte boundary — cutting through a UTF-8 character breaks it."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does a binary language translator work with non-English text?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It decodes it. UTF-8 covers any script the browser can render, so the output can come back as Chinese, Arabic or Cyrillic; GBK is the fallback for Chinese text out of Windows tools. The page converts bytes to characters and never between languages — if the result looks like garbage, the encoding selector is the thing to check."
       }
     }
   ]
